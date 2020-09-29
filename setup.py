@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="placekey",
-    version="0.0.1",
+    version="0.0.4",
     author="SafeGraph Inc.",
     author_email="russ@safegraph.com",
     description="Utilities for working with Placekeys",
@@ -13,6 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Placekey/placekey-py",
     packages=setuptools.find_packages(),
+    install_requires=['h3', 'shapely'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
