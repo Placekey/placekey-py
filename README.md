@@ -2,6 +2,13 @@
 
 A Python library for working with [Placekeys](https://placekey.io). Documentation for this package can be found [here](https://placekey.github.io/placekey-py/), and documentation for the Placekey service API can be found [here](https://docs.placekey.io/).
 
+## Installation
+
+This package can be installed from [PyPI](https://pypi.org/project/placekey/) by
+```shell script
+pip install placekey
+```
+
 ## Usage
 
 The basic functionality of the Placekey library is conversion between Placekeys and latitude-longitude coordinates.
