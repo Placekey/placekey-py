@@ -88,7 +88,9 @@ class PlacekeyAPI:
         if strict_name_match:
             payload['options'] = {"strict_name_match": True}
 
-        r = requests.post(self.URL, headers=self.headers, json=payload)
+        r = requests.post(
+            self.URL, headers=self.headers, data=json.dumps(payload).encode("utf-8")
+        )
         return json.loads(r.text)
 
     def lookup_placekeys(self,
@@ -204,7 +206,9 @@ class PlacekeyAPI:
         if strict_name_match:
             batch_payload['options'] = {"strict_name_match": True}
 
-        r = requests.post(self.BULK_URL, headers=self.headers, json=batch_payload)
+        r = requests.post(
+            self.BULK_URL, headers=self.headers, data=json.dumps(batch_payload).encode('utf-8')
+        )
         return json.loads(r.text)
 
     def _validate_query(self, query_dict):
