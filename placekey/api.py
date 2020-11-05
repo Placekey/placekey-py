@@ -3,7 +3,7 @@ import json
 import logging
 import itertools
 from ratelimit import limits, RateLimitException
-from backoff import on_exception, expo, fibo
+from backoff import on_exception, fibo
 
 console_log = logging.StreamHandler()
 console_log.setFormatter(
@@ -19,12 +19,24 @@ class PlacekeyAPI:
     PlacekeyAPI class
 
     This class provides functionality for looking up Placekeys using the Placekey
-    API. Places to be looked a specified by a place dictionary whose keys must be
-    a subset of {'latitude', 'longitude', 'location_name', 'street_address',
-    'city', 'region', 'postal_code', 'iso_country_code', 'query_id'}.
+    API. Places to be looked a specified by a **place dictionary** whose keys and value types
+    must be a subset of
+
+    * latitude (float)
+    * longitude (float)
+    * location_name (string)
+    * street_address (string)
+    * city (string)
+    * region (string)
+    * postal_code (string)
+    * iso_country_code (string)
+    * query_id (string)
+
+    See the `Placekey API documentation <https://docs.placekey.io/>`_ for more
+    information on how to use the API.
 
     :param api_key: Placekey API key (string)
-    :param logger: A logging object. By default a console logger is used.
+    :param logger: A logging object. Logs are sent to the console by default.
 
     """
     URL = 'https://api.placekey.io/v1/placekey'
@@ -104,7 +116,9 @@ class PlacekeyAPI:
         Lookup Placekeys for an iterable of places specified by place dictionaries.
         This method checks that the place dictionaries are valid before querying
         the API, and it will return partial results if it encounters a fatal error.
-        This method follows the rate limits of the Placekey API.
+        This method follows the rate limits of the Placekey API. This function is a
+        wrapper for `lookup_batch`, and that function may be used if different error
+        handling or logic around batch processing is desired.
 
         :param places: An iterable of of place dictionaries.
         :param strict_address_match: Boolean for whether or not to strict match

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>placekey package &#8212; placekey 0.0.1 documentation</title>
+    <title>Submodules &#8212; placekey 0.0.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -15,7 +15,7 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="placekey" href="modules.html" /> 
+    <link rel="prev" title="Placekey" href="modules.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,11 +27,11 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="modules.html" title="placekey"
+          <a href="modules.html" title="Placekey"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">placekey</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">placekey package</a></li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Placekey</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Submodules</a></li> 
       </ul>
     </div>  
 
@@ -40,10 +40,121 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="placekey-package">
-<h1>placekey package<a class="headerlink" href="#placekey-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="submodules">
+<h1>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-placekey.api">
+<span id="placekey-api"></span><h2>placekey.api<a class="headerlink" href="#module-placekey.api" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="placekey.api.PlacekeyAPI">
+<em class="property">class </em><code class="sig-prename descclassname">placekey.api.</code><code class="sig-name descname">PlacekeyAPI</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">logger=&lt;RootLogger root (INFO)&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>PlacekeyAPI class</p>
+<p>This class provides functionality for looking up Placekeys using the Placekey
+API. Places to be looked a specified by a <strong>place dictionary</strong> whose keys and value types
+must be a subset of</p>
+<ul class="simple">
+<li><p>latitude (float)</p></li>
+<li><p>longitude (float)</p></li>
+<li><p>location_name (string)</p></li>
+<li><p>street_address (string)</p></li>
+<li><p>city (string)</p></li>
+<li><p>region (string)</p></li>
+<li><p>postal_code (string)</p></li>
+<li><p>iso_country_code (string)</p></li>
+<li><p>query_id (string)</p></li>
+</ul>
+<p>See the <a class="reference external" href="https://docs.placekey.io/">Placekey API documentation</a> for more
+information on how to use the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – Placekey API key (string)</p></li>
+<li><p><strong>logger</strong> – A logging object. Logs are sent to the console by default.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="placekey.api.PlacekeyAPI.lookup_batch">
+<code class="sig-name descname">lookup_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">places</span></em>, <em class="sig-param"><span class="n">strict_address_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strict_name_match</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup Placekeys for a single batch of places specified by place dictionaries.
+The batch size can be at most 100 places. This method follows the rate limits
+of the Placekey API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>places</strong> – An iterable of of place dictionaries.</p></li>
+<li><p><strong>strict_address_match</strong> – Boolean for whether or not to strict match
+on address fields. Defaults to <cite>False</cite>.</p></li>
+<li><p><strong>strict_name_match</strong> – Boolean for whether or not to strict match
+on <cite>location_name</cite>. Defaults to <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of Placekey API responses for each place (list(dict))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="placekey.api.PlacekeyAPI.lookup_placekey">
+<code class="sig-name descname">lookup_placekey</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">strict_address_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strict_name_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_placekey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_placekey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup the Placekey for a single place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strict_address_match</strong> – Boolean for whether or not to strict match
+on address fields. Defaults to <cite>False</cite>.</p></li>
+<li><p><strong>strict_name_match</strong> – Boolean for whether or not to strict match
+on <cite>location_name</cite>. Defaults to <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Kwargs</dt>
+<dd class="field-even"><p>Place fields can be passed to this method as keyword arguments. The allowed
+keyword arguments are [‘latitude’, ‘longitude’, ‘location_name’,’street_address’,
+‘city’, ‘region’, ‘postal_code’, ‘iso_country_code’, ‘query_id’]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Placekey API response (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="placekey.api.PlacekeyAPI.lookup_placekeys">
+<code class="sig-name descname">lookup_placekeys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">places</span></em>, <em class="sig-param"><span class="n">strict_address_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strict_name_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_retries</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_placekeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_placekeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup Placekeys for an iterable of places specified by place dictionaries.
+This method checks that the place dictionaries are valid before querying
+the API, and it will return partial results if it encounters a fatal error.
+This method follows the rate limits of the Placekey API. This function is a
+wrapper for <cite>lookup_batch</cite>, and that function may be used if different error
+handling or logic around batch processing is desired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>places</strong> – An iterable of of place dictionaries.</p></li>
+<li><p><strong>strict_address_match</strong> – Boolean for whether or not to strict match
+on address fields. Defaults to <cite>False</cite>.</p></li>
+<li><p><strong>strict_name_match</strong> – Boolean for whether or not to strict match
+on <cite>location_name</cite>. Defaults to <cite>False</cite>.</p></li>
+<li><p><strong>max_retries</strong> – Integer value for the maximum number of retries to make when encountering
+an error. Defaults to 20</p></li>
+<li><p><strong>batch_size</strong> – Integer for the number of places to lookup in a single batch.
+Defaults to 100, and cannot exceeded 100.</p></li>
+<li><p><strong>verbose</strong> – Boolean for whether or not to log additional information.
+Defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of Placekey API responses for each place (list(dict))</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-placekey.placekey">
-<span id="placekey-placekey-module"></span><h2>placekey.placekey module<a class="headerlink" href="#module-placekey.placekey" title="Permalink to this headline">¶</a></h2>
+<span id="placekey-placekey"></span><h2>placekey.placekey<a class="headerlink" href="#module-placekey.placekey" title="Permalink to this headline">¶</a></h2>
 <p>Functionality for converting between Placekeys and geos (latitude, longitude tuples) or
 H3 indices. This module also includes additional utilities related to Placekeys.</p>
 <dl class="py function">
@@ -343,15 +454,16 @@ counter-clockwise orientation. If False (default) assumes tuples will be
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">placekey package</a><ul>
-<li><a class="reference internal" href="#module-placekey.placekey">placekey.placekey module</a></li>
+<li><a class="reference internal" href="#">Submodules</a><ul>
+<li><a class="reference internal" href="#module-placekey.api">placekey.api</a></li>
+<li><a class="reference internal" href="#module-placekey.placekey">placekey.placekey</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="modules.html"
-                        title="previous chapter">placekey</a></p>
+                        title="previous chapter">Placekey</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -383,11 +495,11 @@ counter-clockwise orientation. If False (default) assumes tuples will be
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="modules.html" title="placekey"
+          <a href="modules.html" title="Placekey"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >placekey</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">placekey package</a></li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" >Placekey</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Submodules</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

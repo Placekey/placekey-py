@@ -6,7 +6,9 @@
 make clean; make html
 ```
 
-in `./docsrc`, and the documentation will be generated in `./docsrc/build`. To build the documentation for hosting on Github Pages run
+in `./docsrc`, and the documentation will be generated in `./docsrc/build`.
+
+To build the documentation for hosting on Github Pages run
 
 ```shell script
 make clean; make github

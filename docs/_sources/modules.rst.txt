@@ -1,4 +1,4 @@
-placekey
+Placekey
 ========
 
 .. toctree::
