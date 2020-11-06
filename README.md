@@ -9,6 +9,7 @@ A Python library for working with [Placekeys](https://placekey.io). Documentatio
 ## Installation
 
 This package can be installed from [PyPI](https://pypi.org/project/placekey/) by
+
 ```shell script
 pip install placekey
 ```
@@ -49,6 +50,7 @@ The distance in meters between two Placekeys can be found with the following fun
 ```
 
 An upper bound on the maximal distance in meters between two Placekeys based on the length of their shared prefix is provided by `placekey.get_prefix_distance_dict()`.
+
 ```python
 >>> pk.get_prefix_distance_dict()
 {0: 20040000.0,
@@ -74,6 +76,68 @@ True
 >>> pk.placekey_format_is_valid('@123-456-789')
 False
 ```
+
+## API Client
+
+This package also includes a client for the Placekey API. The methods in the client are automatically rate limited.
+
+```python
+>>> from placekey.api import PlacekeyAPI
+>>> placekey_api_key = "..."
+>>> pk_api = PlacekeyAPI(placekey_api_key)
+```
+
+The `PlacekeyAPI.lookup_placekey` method can be used to lookup the Placekey for a single place.
+
+```python
+>>> pk_api.lookup_placekey(latitude=37.7371, longitude=-122.44283)
+{'query_id': '0', 'placekey': '@5vg-82n-kzz'}
+```
+
+```python
+>>> place = {
+>>>   "street_address": "598 Portola Dr",
+>>>   "city": "San Francisco",
+>>>   "region": "CA",
+>>>   "postal_code": "94131",
+>>>   "iso_country_code": "US"
+>>> }
+>>> pk_api.lookup_placekey(**place, strict_address_match=True)
+{'query_id': '0', 'placekey': '227@5vg-82n-pgk'}
+```
+
+The `PlacekeyAPI.lookup_placekeys` method can be used to lookup Placekeys for multiple places.
+
+```python
+>>> places = [
+>>>   {
+>>>     "street_address": "1543 Mission Street, Floor 3",
+>>>     "city": "San Francisco",
+>>>     "region": "CA",
+>>>     "postal_code": "94105",
+>>>     "iso_country_code": "US"
+>>>   },
+>>>   {
+>>>     "query_id": "thisqueryidaloneiscustom",
+>>>     "location_name": "Twin Peaks Petroleum",
+>>>     "street_address": "598 Portola Dr",
+>>>     "city": "San Francisco",
+>>>     "region": "CA",
+>>>     "postal_code": "94131",
+>>>     "iso_country_code": "US"
+>>>   },
+>>>   {
+>>>     "latitude": 37.7371,
+>>>     "longitude": -122.44283
+>>>   }
+>>> ]
+>>> pk_api.lookup_placekeys(places)
+[{'query_id': '0', 'placekey': '226@5vg-7gq-5mk'},
+ {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-222@5vg-82n-pgk'},
+ {'query_id': '2', 'placekey': '@5vg-82n-kzz'}]
+```
+
+Full details on how to query the API and how to get an API key can be found [here](https://docs.placekey.io/).
 
 ## Notebooks
 
