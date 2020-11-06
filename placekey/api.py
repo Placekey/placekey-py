@@ -169,7 +169,7 @@ class PlacekeyAPI:
                 res = [{'query_id': str(i), 'error': res['error']}
                        for i in range(i, max_batch_idx)]
 
-            # Catch malformed input cases. TODO: REMOVE THIS
+            # Catch malformed input cases. TODO:Remove this
             elif 'message' in res:
                 if verbose:
                     self.logger.error(res['message'])
@@ -178,7 +178,8 @@ class PlacekeyAPI:
             else:
                 # Remap the 'query_id' field to match address index
                 for r in res:
-                    r['query_id'] = int(r['query_id']) + i
+                    if r['query_id'].isdigit():
+                        r['query_id'] = str(int(r['query_id']) + i)
 
             results.append(res)
 
