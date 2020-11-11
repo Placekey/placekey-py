@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Placekey/placekey-py",
     packages=setuptools.find_packages(),
-    install_requires=['h3', 'shapely', 'requests', 'ratelimit', 'backoff],
+    install_requires=['h3', 'shapely', 'requests', 'ratelimit', 'backoff'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
