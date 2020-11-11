@@ -1,7 +1,7 @@
 # Placekey-py
 
 [![PyPI version](https://badge.fury.io/py/placekey.svg)](https://badge.fury.io/py/placekey)
-[![PyPI downloads](https://pypip.in/d/placekey/badge.png)](https://pypistats.org/packages/placekey)
+[![PyPI downloads](https://img.shields.io/pypi/dm/placekey)](https://pypistats.org/packages/placekey)
 [![version](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 A Python library for working with [Placekeys](https://placekey.io). Documentation for this package can be found [here](https://placekey.github.io/placekey-py/), and documentation for the Placekey service API can be found [here](https://docs.placekey.io/). The Plackey design specification is available [here](https://docs.placekey.io/Placekey_Technical_White_Paper.pdf). The details in Placekey encoding is [here](https://docs.placekey.io/Placekey_Encoding_Specification%20White_Paper.pdf). We welcome your feedback. 
