@@ -1,7 +1,7 @@
-import requests
 import json
 import logging
 import itertools
+import requests
 from ratelimit import limits, RateLimitException
 from backoff import on_exception, fibo
 
@@ -36,6 +36,9 @@ class PlacekeyAPI:
     information on how to use the API.
 
     :param api_key: Placekey API key (string)
+    :param max_retries: Maximum number of times to retry a failed request before
+        halting (int). Backoffs due to rate-limiting are included in the retry count. Defaults
+        to 20.
     :param logger: A logging object. Logs are sent to the console by default.
 
     """
@@ -62,16 +65,29 @@ class PlacekeyAPI:
         'query_id'
     }
 
-    def __init__(self, api_key=None, logger=log):
+    def __init__(self, api_key=None, max_retries=DEFAULT_MAX_RETRIES, logger=log):
         self.api_key = api_key
+        self.max_retries = max_retries
+        self.logger = logger
+
         self.headers = {
             'Content-Type': 'application/json',
             'apikey': api_key
         }
-        self.logger = logger
 
-    @on_exception(fibo, RateLimitException, max_tries=DEFAULT_MAX_RETRIES)
-    @limits(calls=REQUEST_LIMIT, period=REQUEST_WINDOW)
+        # Rate-limited function for a single requests
+        self.make_request = self._get_request_function(
+            url=self.URL,
+            calls=self.REQUEST_LIMIT,
+            period=self.REQUEST_WINDOW,
+            max_tries=self.max_retries)
+
+        self.make_bulk_request = self._get_request_function(
+            url=self.BULK_URL,
+            calls=self.BULK_REQUEST_LIMIT,
+            period=self.BULK_REQUEST_WINDOW,
+            max_tries=self.max_retries)
+
     def lookup_placekey(self,
                         strict_address_match=False,
                         strict_name_match=False,
@@ -100,16 +116,18 @@ class PlacekeyAPI:
         if strict_name_match:
             payload['options'] = {"strict_name_match": True}
 
-        r = requests.post(
-            self.URL, headers=self.headers, data=json.dumps(payload).encode("utf-8")
-        )
-        return json.loads(r.text)
+        # Make request, and retry if there is a server-side rate limit error
+        while True:
+            result = self.make_request(payload)
+            if result.status_code != 429:
+                break
+
+        return json.loads(result.text)
 
     def lookup_placekeys(self,
                          places,
                          strict_address_match=False,
                          strict_name_match=False,
-                         max_retries=DEFAULT_MAX_RETRIES,
                          batch_size=MAX_BATCH_SIZE,
                          verbose=False):
         """
@@ -125,8 +143,6 @@ class PlacekeyAPI:
             on address fields. Defaults to `False`.
         :param strict_name_match: Boolean for whether or not to strict match
             on `location_name`. Defaults to `False`.
-        :param max_retries: Integer value for the maximum number of retries to make when encountering
-            an error. Defaults to 20
         :param batch_size: Integer for the number of places to lookup in a single batch.
             Defaults to 100, and cannot exceeded 100.
         :param verbose: Boolean for whether or not to log additional information.
@@ -146,34 +162,32 @@ class PlacekeyAPI:
         for i in range(0, len(places), batch_size):
             max_batch_idx = min(i + batch_size, len(places))
 
-            # Catch too many retries, and return partial results
             try:
                 res = self.lookup_batch(
                     places[i:max_batch_idx],
                     strict_address_match=strict_address_match,
                     strict_name_match=strict_name_match
                 )
-            except RateLimitException as e:
+            except RateLimitException:
                 logging.error(
-                    'max_tries ({}) exceeded. Returning processed items.'.format(
-                        max_retries))
+                    'Fatal error encountered. Returning processed items.')
                 break
 
             # Catch case where all queries in batch having an error,
             # and generate rows for individual items.
             if isinstance(res, dict) and 'error' in res:
                 if verbose:
-                    self.logger.info('All queries in batch ({}, {}) had errors'.format(
-                        i, max_batch_idx))
+                    self.logger.info(
+                        'All queries in batch (%s, %s) had errors', i, max_batch_idx)
 
                 res = [{'query_id': str(i), 'error': res['error']}
                        for i in range(i, max_batch_idx)]
 
-            # Catch malformed input cases. TODO:Remove this
+            # Catch other server-side errors
             elif 'message' in res:
                 if verbose:
                     self.logger.error(res['message'])
-                    self.logger.info('Returning completed queries')
+                    self.logger.error('Returning completed queries')
                 break
             else:
                 # Remap the 'query_id' field to match address index
@@ -184,18 +198,21 @@ class PlacekeyAPI:
             results.append(res)
 
             if verbose and max_batch_idx % (10 * batch_size) == 0 and i > 0:
-                logging.info('Processed {} items'.format(max_batch_idx))
+                logging.info('Processed %s items', max_batch_idx)
 
-        return list(itertools.chain.from_iterable(results))
+        result_list = list(itertools.chain.from_iterable(results))
+        if verbose:
+            logging.info('Processed %s items', len(result_list))
+            logging.info('Done')
 
-    @on_exception(fibo, RateLimitException, max_tries=DEFAULT_MAX_RETRIES)
-    @limits(calls=BULK_REQUEST_LIMIT, period=BULK_REQUEST_WINDOW)
+        return result_list
+
     def lookup_batch(self, places,
                      strict_address_match=False,
                      strict_name_match=False):
         """
         Lookup Placekeys for a single batch of places specified by place dictionaries.
-        The batch size can be at most 100 places. This method follows the rate limits
+        The batch size can be at most 100 places. This method respects the rate limits
         of the Placekey API.
 
         :param places: An iterable of of place dictionaries.
@@ -221,10 +238,32 @@ class PlacekeyAPI:
         if strict_name_match:
             batch_payload['options'] = {"strict_name_match": True}
 
-        r = requests.post(
-            self.BULK_URL, headers=self.headers, data=json.dumps(batch_payload).encode('utf-8')
-        )
-        return json.loads(r.text)
+        # Make request, and retry if there is a server-side rate limit error
+        while True:
+            result = self.make_bulk_request(batch_payload)
+            if result.status_code != 429:
+                break
+
+        return json.loads(result.text)
 
     def _validate_query(self, query_dict):
         return set(query_dict.keys()).issubset(self.QUERY_PARAMETERS)
+
+    def _get_request_function(self, url, calls, period, max_tries):
+        """
+        Construct a rate limited function for making requests.
+
+        :param url: request URL
+        :param calls: number of calls that can be made in time period
+        :param  period: length of rate limiting time period in seconds
+        :param max_tries: the maximum number of retries before giving up
+        """
+        @on_exception(fibo, RateLimitException, max_tries=max_tries)
+        @limits(calls=calls, period=period)
+        def make_request(data):
+            return requests.post(
+                url, headers=self.headers,
+                data=json.dumps(data).encode('utf-8')
+            )
+
+        return make_request
