@@ -10,7 +10,7 @@ console_log.setFormatter(
     logging.Formatter('%(asctime)s\t%(levelname)s\t%(message)s')
 )
 log = logging.getLogger()
-log.setLevel(logging.INFO)
+log.setLevel(logging.ERROR)
 log.handlers = [console_log]
 
 
@@ -158,6 +158,13 @@ class PlacekeyAPI:
             raise ValueError(
                 "Some queries contain keys other than: {}".format(self.QUERY_PARAMETERS))
 
+        if verbose:
+            self.logger.setLevel(logging.INFO)
+            logging.getLogger('backoff').setLevel(logging.INFO)
+        else:
+            self.logger.setLevel(logging.ERROR)
+            logging.getLogger('backoff').setLevel(logging.ERROR)
+
         results = []
         for i in range(0, len(places), batch_size):
             max_batch_idx = min(i + batch_size, len(places))
@@ -169,25 +176,23 @@ class PlacekeyAPI:
                     strict_name_match=strict_name_match
                 )
             except RateLimitException:
-                logging.error(
+                self.logger.error(
                     'Fatal error encountered. Returning processed items.')
                 break
 
             # Catch case where all queries in batch having an error,
             # and generate rows for individual items.
             if isinstance(res, dict) and 'error' in res:
-                if verbose:
-                    self.logger.info(
-                        'All queries in batch (%s, %s) had errors', i, max_batch_idx)
+                self.logger.info(
+                    'All queries in batch (%s, %s) had errors', i, max_batch_idx)
 
                 res = [{'query_id': str(i), 'error': res['error']}
                        for i in range(i, max_batch_idx)]
 
             # Catch other server-side errors
             elif 'message' in res:
-                if verbose:
-                    self.logger.error(res['message'])
-                    self.logger.error('Returning completed queries')
+                self.logger.error(res['message'])
+                self.logger.error('Returning completed queries')
                 break
             else:
                 # Remap the 'query_id' field to match address index
@@ -197,13 +202,12 @@ class PlacekeyAPI:
 
             results.append(res)
 
-            if verbose and max_batch_idx % (10 * batch_size) == 0 and i > 0:
-                logging.info('Processed %s items', max_batch_idx)
+            if max_batch_idx % (10 * batch_size) == 0 and i > 0:
+                self.logger.info('Processed %s items', max_batch_idx)
 
         result_list = list(itertools.chain.from_iterable(results))
-        if verbose:
-            logging.info('Processed %s items', len(result_list))
-            logging.info('Done')
+        self.logger.info('Processed %s items', len(result_list))
+        self.logger.info('Done')
 
         return result_list
 
