@@ -46,7 +46,7 @@
 <span id="placekey-api"></span><h2>placekey.api<a class="headerlink" href="#module-placekey.api" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="placekey.api.PlacekeyAPI">
-<em class="property">class </em><code class="sig-prename descclassname">placekey.api.</code><code class="sig-name descname">PlacekeyAPI</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">logger=&lt;RootLogger root (INFO)&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">placekey.api.</code><code class="sig-name descname">PlacekeyAPI</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">max_retries=20</em>, <em class="sig-param">logger=&lt;RootLogger root (INFO)&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>PlacekeyAPI class</p>
 <p>This class provides functionality for looking up Placekeys using the Placekey
@@ -69,6 +69,9 @@ information on how to use the API.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>api_key</strong> – Placekey API key (string)</p></li>
+<li><p><strong>max_retries</strong> – Maximum number of times to retry a failed request before
+halting (int). Backoffs due to rate-limiting are included in the retry count. Defaults
+to 20.</p></li>
 <li><p><strong>logger</strong> – A logging object. Logs are sent to the console by default.</p></li>
 </ul>
 </dd>
@@ -77,7 +80,7 @@ information on how to use the API.</p>
 <dt id="placekey.api.PlacekeyAPI.lookup_batch">
 <code class="sig-name descname">lookup_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">places</span></em>, <em class="sig-param"><span class="n">strict_address_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strict_name_match</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lookup Placekeys for a single batch of places specified by place dictionaries.
-The batch size can be at most 100 places. This method follows the rate limits
+The batch size can be at most 100 places. This method respects the rate limits
 of the Placekey API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -121,7 +124,7 @@ keyword arguments are [‘latitude’, ‘longitude’, ‘location_name’,’s
 
 <dl class="py method">
 <dt id="placekey.api.PlacekeyAPI.lookup_placekeys">
-<code class="sig-name descname">lookup_placekeys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">places</span></em>, <em class="sig-param"><span class="n">strict_address_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strict_name_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_retries</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_placekeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_placekeys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lookup_placekeys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">places</span></em>, <em class="sig-param"><span class="n">strict_address_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strict_name_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_placekeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_placekeys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lookup Placekeys for an iterable of places specified by place dictionaries.
 This method checks that the place dictionaries are valid before querying
 the API, and it will return partial results if it encounters a fatal error.
@@ -136,8 +139,6 @@ handling or logic around batch processing is desired.</p>
 on address fields. Defaults to <cite>False</cite>.</p></li>
 <li><p><strong>strict_name_match</strong> – Boolean for whether or not to strict match
 on <cite>location_name</cite>. Defaults to <cite>False</cite>.</p></li>
-<li><p><strong>max_retries</strong> – Integer value for the maximum number of retries to make when encountering
-an error. Defaults to 20</p></li>
 <li><p><strong>batch_size</strong> – Integer for the number of places to lookup in a single batch.
 Defaults to 100, and cannot exceeded 100.</p></li>
 <li><p><strong>verbose</strong> – Boolean for whether or not to log additional information.
