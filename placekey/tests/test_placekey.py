@@ -45,7 +45,7 @@ class TestPlacekey(unittest.TestCase):
                 'distance': float(tokens[4]),
             }
 
-        with open('placekey/tests/example_distances.csv') as f:
+        with open('placekey/tests/example_distances.tsv') as f:
             next(f)  # skip header
             self.distance_samples = [parse_distances(l.strip())
                                      for l in f.readlines()]
