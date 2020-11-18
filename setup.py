@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="placekey",
-    version="0.0.7",
+    version="0.0.8",
     author="SafeGraph Inc.",
     author_email="russ@safegraph.com",
     description="Utilities for working with Placekeys",
