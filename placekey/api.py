@@ -137,8 +137,8 @@ class PlacekeyAPI:
         This method checks that the place dictionaries are valid before querying
         the API, and it will return partial results if it encounters a fatal error.
         Places without a `query_id` will have one generated for them based on their
-        index in `places`, e.g., `place_123`, but user-provided `query_id`s will
-        be passed through as is.
+        index in `places`, e.g., "place_0" for the first item in the list, but a
+        user-provided `query_id` will be passed through as is.
 
         This function is a wrapper for `lookup_batch`, and that function may be
         used if different error handling or logic around batch processing is desired.
