@@ -49,7 +49,7 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="se">\t</span><span class="si">%(levelname)s</span><span class="se">\t</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
-<span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 <span class="n">log</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[</span><span class="n">console_log</span><span class="p">]</span>
 
 
@@ -103,6 +103,8 @@
         <span class="s1">&#39;iso_country_code&#39;</span><span class="p">,</span>
         <span class="s1">&#39;query_id&#39;</span>
     <span class="p">}</span>
+
+    <span class="n">DEFAULT_QUERY_ID_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;place_&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="n">DEFAULT_MAX_RETRIES</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">log</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
@@ -173,9 +175,14 @@
 <span class="sd">        Lookup Placekeys for an iterable of places specified by place dictionaries.</span>
 <span class="sd">        This method checks that the place dictionaries are valid before querying</span>
 <span class="sd">        the API, and it will return partial results if it encounters a fatal error.</span>
-<span class="sd">        This method follows the rate limits of the Placekey API. This function is a</span>
-<span class="sd">        wrapper for `lookup_batch`, and that function may be used if different error</span>
-<span class="sd">        handling or logic around batch processing is desired.</span>
+<span class="sd">        Places without a `query_id` will have one generated for them based on their</span>
+<span class="sd">        index in `places`, e.g., &quot;place_0&quot; for the first item in the list, but a</span>
+<span class="sd">        user-provided `query_id` will be passed through as is.</span>
+
+<span class="sd">        This function is a wrapper for `lookup_batch`, and that function may be</span>
+<span class="sd">        used if different error handling or logic around batch processing is desired.</span>
+
+<span class="sd">        This method follows the rate limits of the Placekey API.</span>
 
 <span class="sd">        :param places: An iterable of of place dictionaries.</span>
 <span class="sd">        :param strict_address_match: Boolean for whether or not to strict match</span>
@@ -197,9 +204,22 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Some queries contain keys other than: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">QUERY_PARAMETERS</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;backoff&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;backoff&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+        <span class="c1"># Add a query_id to each place that doesn&#39;t have one</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">place</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">places</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;query_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">place</span><span class="p">:</span>
+                <span class="n">place</span><span class="p">[</span><span class="s1">&#39;query_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_QUERY_ID_PREFIX</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">places</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
             <span class="n">max_batch_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">places</span><span class="p">))</span>
+            <span class="n">batch_query_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;query_id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">places</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">max_batch_idx</span><span class="p">]]</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_batch</span><span class="p">(</span>
@@ -208,41 +228,33 @@
                     <span class="n">strict_name_match</span><span class="o">=</span><span class="n">strict_name_match</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="n">RateLimitException</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s1">&#39;Fatal error encountered. Returning processed items.&#39;</span><span class="p">)</span>
                 <span class="k">break</span>
 
             <span class="c1"># Catch case where all queries in batch having an error,</span>
             <span class="c1"># and generate rows for individual items.</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s1">&#39;All queries in batch (</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">) had errors&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">max_batch_idx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;All queries in batch (</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">) had errors&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">max_batch_idx</span><span class="p">)</span>
 
-                <span class="n">res</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;query_id&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]}</span>
-                       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">max_batch_idx</span><span class="p">)]</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;query_id&#39;</span><span class="p">:</span> <span class="n">query_id</span><span class="p">,</span>  <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]}</span>
+                       <span class="k">for</span> <span class="n">query_id</span> <span class="ow">in</span> <span class="n">batch_query_ids</span><span class="p">]</span>
 
             <span class="c1"># Catch other server-side errors</span>
             <span class="k">elif</span> <span class="s1">&#39;message&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Returning completed queries&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Returning completed queries&#39;</span><span class="p">)</span>
                 <span class="k">break</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Remap the &#39;query_id&#39; field to match address index</span>
-                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;query_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
-                        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;query_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;query_id&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
 
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">max_batch_idx</span> <span class="o">%</span> <span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processed </span><span class="si">%s</span><span class="s1"> items&#39;</span><span class="p">,</span> <span class="n">max_batch_idx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">max_batch_idx</span> <span class="o">%</span> <span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processed </span><span class="si">%s</span><span class="s1"> items&#39;</span><span class="p">,</span> <span class="n">max_batch_idx</span><span class="p">)</span>
 
         <span class="n">result_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processed </span><span class="si">%s</span><span class="s1"> items&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_list</span><span class="p">))</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Done&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processed </span><span class="si">%s</span><span class="s1"> items&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_list</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Done&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result_list</span></div>
 

@@ -65,6 +65,8 @@ class PlacekeyAPI:
         'query_id'
     }
 
+    DEFAULT_QUERY_ID_PREFIX = "place_"
+
     def __init__(self, api_key=None, max_retries=DEFAULT_MAX_RETRIES, logger=log):
         self.api_key = api_key
         self.max_retries = max_retries
@@ -134,9 +136,14 @@ class PlacekeyAPI:
         Lookup Placekeys for an iterable of places specified by place dictionaries.
         This method checks that the place dictionaries are valid before querying
         the API, and it will return partial results if it encounters a fatal error.
-        This method follows the rate limits of the Placekey API. This function is a
-        wrapper for `lookup_batch`, and that function may be used if different error
-        handling or logic around batch processing is desired.
+        Places without a `query_id` will have one generated for them based on their
+        index in `places`, e.g., "place_0" for the first item in the list, but a
+        user-provided `query_id` will be passed through as is.
+
+        This function is a wrapper for `lookup_batch`, and that function may be
+        used if different error handling or logic around batch processing is desired.
+
+        This method follows the rate limits of the Placekey API.
 
         :param places: An iterable of of place dictionaries.
         :param strict_address_match: Boolean for whether or not to strict match
@@ -165,9 +172,15 @@ class PlacekeyAPI:
             self.logger.setLevel(logging.ERROR)
             logging.getLogger('backoff').setLevel(logging.ERROR)
 
+        # Add a query_id to each place that doesn't have one
+        for i, place in enumerate(places):
+            if 'query_id' not in place:
+                place['query_id'] = self.DEFAULT_QUERY_ID_PREFIX + str(i)
+
         results = []
         for i in range(0, len(places), batch_size):
             max_batch_idx = min(i + batch_size, len(places))
+            batch_query_ids = [p['query_id'] for p in places[i:max_batch_idx]]
 
             try:
                 res = self.lookup_batch(
@@ -186,19 +199,14 @@ class PlacekeyAPI:
                 self.logger.info(
                     'All queries in batch (%s, %s) had errors', i, max_batch_idx)
 
-                res = [{'query_id': str(i), 'error': res['error']}
-                       for i in range(i, max_batch_idx)]
+                res = [{'query_id': query_id,  'error': res['error']}
+                       for query_id in batch_query_ids]
 
             # Catch other server-side errors
             elif 'message' in res:
                 self.logger.error(res['message'])
                 self.logger.error('Returning completed queries')
                 break
-            else:
-                # Remap the 'query_id' field to match address index
-                for r in res:
-                    if r['query_id'].isdigit():
-                        r['query_id'] = str(int(r['query_id']) + i)
 
             results.append(res)
 

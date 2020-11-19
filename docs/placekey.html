@@ -46,7 +46,7 @@
 <span id="placekey-api"></span><h2>placekey.api<a class="headerlink" href="#module-placekey.api" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="placekey.api.PlacekeyAPI">
-<em class="property">class </em><code class="sig-prename descclassname">placekey.api.</code><code class="sig-name descname">PlacekeyAPI</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">max_retries=20</em>, <em class="sig-param">logger=&lt;RootLogger root (INFO)&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">placekey.api.</code><code class="sig-name descname">PlacekeyAPI</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">max_retries=20</em>, <em class="sig-param">logger=&lt;RootLogger root (ERROR)&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>PlacekeyAPI class</p>
 <p>This class provides functionality for looking up Placekeys using the Placekey
@@ -128,9 +128,12 @@ keyword arguments are [‘latitude’, ‘longitude’, ‘location_name’,’s
 <dd><p>Lookup Placekeys for an iterable of places specified by place dictionaries.
 This method checks that the place dictionaries are valid before querying
 the API, and it will return partial results if it encounters a fatal error.
-This method follows the rate limits of the Placekey API. This function is a
-wrapper for <cite>lookup_batch</cite>, and that function may be used if different error
-handling or logic around batch processing is desired.</p>
+Places without a <cite>query_id</cite> will have one generated for them based on their
+index in <cite>places</cite>, e.g., “place_0” for the first item in the list, but a
+user-provided <cite>query_id</cite> will be passed through as is.</p>
+<p>This function is a wrapper for <cite>lookup_batch</cite>, and that function may be
+used if different error handling or logic around batch processing is desired.</p>
+<p>This method follows the rate limits of the Placekey API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
