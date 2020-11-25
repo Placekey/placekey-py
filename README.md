@@ -132,9 +132,9 @@ The `PlacekeyAPI.lookup_placekeys` method can be used to lookup Placekeys for mu
 >>>   }
 >>> ]
 >>> pk_api.lookup_placekeys(places)
-[{'query_id': '0', 'placekey': '226@5vg-7gq-5mk'},
+[{'query_id': 'place_0', 'placekey': '226@5vg-7gq-5mk'},
  {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-222@5vg-82n-pgk'},
- {'query_id': '2', 'placekey': '@5vg-82n-kzz'}]
+ {'query_id': 'place_2', 'placekey': '@5vg-82n-kzz'}]
 ```
 
 Full details on how to query the API and how to get an API key can be found [here](https://docs.placekey.io/).
