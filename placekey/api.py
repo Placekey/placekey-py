@@ -86,7 +86,8 @@ class PlacekeyAPI:
         }
 
         if isinstance(self.user_agent_comment, str):
-            self.headers['User-agent'] += " " + self.user_agent_comment
+            self.headers['User-agent'] = (
+                    self.headers['User-agent'] + " " + self.user_agent_comment).strip()
 
         # Rate-limited function for a single requests
         self.make_request = self._get_request_function(
