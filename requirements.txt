@@ -1,5 +1,2 @@
-h3
-shapely
-requests
-ratelimit
-backoff
+--index-url https://pypi.python.org/simple/
+-e .
