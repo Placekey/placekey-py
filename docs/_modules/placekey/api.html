@@ -43,6 +43,7 @@
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">ratelimit</span> <span class="kn">import</span> <span class="n">limits</span><span class="p">,</span> <span class="n">RateLimitException</span>
 <span class="kn">from</span> <span class="nn">backoff</span> <span class="kn">import</span> <span class="n">on_exception</span><span class="p">,</span> <span class="n">fibo</span>
+<span class="kn">from</span> <span class="nn">.__init__</span> <span class="kn">import</span> <span class="n">__version__</span>
 
 <span class="n">console_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
 <span class="n">console_log</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span>
@@ -79,6 +80,8 @@
 <span class="sd">        halting (int). Backoffs due to rate-limiting are included in the retry count. Defaults</span>
 <span class="sd">        to 20.</span>
 <span class="sd">    :param logger: A logging object. Logs are sent to the console by default.</span>
+<span class="sd">    :param user_agent_comment: A string to append to the client&#39;s user agent, which will be</span>
+<span class="sd">        &quot;placekey-py/{version_number} {user_agent_comment}.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.placekey.io/v1/placekey&#39;</span>
@@ -89,6 +92,8 @@
     <span class="n">BULK_REQUEST_LIMIT</span> <span class="o">=</span> <span class="mi">100</span>
     <span class="n">BULK_REQUEST_WINDOW</span> <span class="o">=</span> <span class="mi">60</span>
     <span class="n">MAX_BATCH_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">DEFAULT_USER_AGENT</span> <span class="o">=</span> <span class="s1">&#39;placekey-py/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
 
     <span class="n">DEFAULT_MAX_RETRIES</span> <span class="o">=</span> <span class="mi">20</span>
 
@@ -106,15 +111,23 @@
 
     <span class="n">DEFAULT_QUERY_ID_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;place_&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="n">DEFAULT_MAX_RETRIES</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">log</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="n">DEFAULT_MAX_RETRIES</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+                 <span class="n">user_agent_comment</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span> <span class="o">=</span> <span class="n">max_retries</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_agent_comment</span> <span class="o">=</span> <span class="n">user_agent_comment</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key_</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;apikey&#39;</span><span class="p">:</span> <span class="n">api_key</span>
+            <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_USER_AGENT</span><span class="p">,</span>
+            <span class="s1">&#39;apikey&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span>
         <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_agent_comment</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_agent_comment</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
         <span class="c1"># Rate-limited function for a single requests</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">make_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_function</span><span class="p">(</span>

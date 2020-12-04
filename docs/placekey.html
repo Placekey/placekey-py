@@ -46,7 +46,7 @@
 <span id="placekey-api"></span><h2>placekey.api<a class="headerlink" href="#module-placekey.api" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="placekey.api.PlacekeyAPI">
-<em class="property">class </em><code class="sig-prename descclassname">placekey.api.</code><code class="sig-name descname">PlacekeyAPI</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">max_retries=20</em>, <em class="sig-param">logger=&lt;RootLogger root (ERROR)&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">placekey.api.</code><code class="sig-name descname">PlacekeyAPI</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">max_retries=20</em>, <em class="sig-param">logger=&lt;RootLogger root (ERROR)&gt;</em>, <em class="sig-param">user_agent_comment=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>PlacekeyAPI class</p>
 <p>This class provides functionality for looking up Placekeys using the Placekey
@@ -73,6 +73,8 @@ information on how to use the API.</p>
 halting (int). Backoffs due to rate-limiting are included in the retry count. Defaults
 to 20.</p></li>
 <li><p><strong>logger</strong> – A logging object. Logs are sent to the console by default.</p></li>
+<li><p><strong>user_agent_comment</strong> – A string to append to the client’s user agent, which will be
+“placekey-py/{version_number} {user_agent_comment}.</p></li>
 </ul>
 </dd>
 </dl>

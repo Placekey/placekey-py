@@ -41,8 +41,8 @@ class PlacekeyAPI:
         halting (int). Backoffs due to rate-limiting are included in the retry count. Defaults
         to 20.
     :param logger: A logging object. Logs are sent to the console by default.
-    :param user_agent_comment: A string to append to the client's user agent which will be
-        "placekey-py / {version_number} {user_agent_comment}.
+    :param user_agent_comment: A string to append to the client's user agent, which will be
+        "placekey-py/{version_number} {user_agent_comment}.
 
     """
     URL = 'https://api.placekey.io/v1/placekey'
