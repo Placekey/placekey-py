@@ -184,7 +184,7 @@ class TestPlacekey(unittest.TestCase):
             # significant digits of the polygon vertices. This check verifies
             # that the resulting polygons
             pk_poly = shape(pk_geojson)
-            geojson_poly = shape(geojson)
+            geojson_poly = shape(geo_json)
             self.assertTrue(pk_poly.almost_equals(geojson_poly, decimal=12))
 
     def test_placekey_format_is_valid(self):
