@@ -1,11 +1,21 @@
 import setuptools
+import os
+
+version_data = {}
+version_path = os.path.join(
+    os.path.abspath(os.path.dirname(__file__)), 'placekey', '__version__.py')
+with open(version_path, 'r') as f:
+    for line in f.readlines():
+        if '=' in line:
+            lhs, rhs = line.split('=')
+            version_data[lhs.strip()] = rhs.strip()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="placekey",
-    version="0.0.8",
+    version=version_data['__version__'],
     author="SafeGraph Inc.",
     author_email="russ@safegraph.com",
     description="Utilities for working with Placekeys",

@@ -4,6 +4,7 @@ import itertools
 import requests
 from ratelimit import limits, RateLimitException
 from backoff import on_exception, fibo
+from .__init__ import __version__
 
 console_log = logging.StreamHandler()
 console_log.setFormatter(
@@ -40,6 +41,8 @@ class PlacekeyAPI:
         halting (int). Backoffs due to rate-limiting are included in the retry count. Defaults
         to 20.
     :param logger: A logging object. Logs are sent to the console by default.
+    :param user_agent_comment: A string to append to the client's user agent, which will be
+        "placekey-py/{version_number} {user_agent_comment}.
 
     """
     URL = 'https://api.placekey.io/v1/placekey'
@@ -50,6 +53,8 @@ class PlacekeyAPI:
     BULK_REQUEST_LIMIT = 100
     BULK_REQUEST_WINDOW = 60
     MAX_BATCH_SIZE = 100
+
+    DEFAULT_USER_AGENT = 'placekey-py/{}'.format(__version__)
 
     DEFAULT_MAX_RETRIES = 20
 
@@ -67,15 +72,23 @@ class PlacekeyAPI:
 
     DEFAULT_QUERY_ID_PREFIX = "place_"
 
-    def __init__(self, api_key=None, max_retries=DEFAULT_MAX_RETRIES, logger=log):
+    def __init__(self, api_key=None, max_retries=DEFAULT_MAX_RETRIES, logger=log,
+                 user_agent_comment=None):
         self.api_key = api_key
         self.max_retries = max_retries
         self.logger = logger
+        self.user_agent_comment = user_agent_comment
 
-        self.headers = {
+        self.key_ = {
             'Content-Type': 'application/json',
-            'apikey': api_key
+            'User-Agent': self.DEFAULT_USER_AGENT,
+            'apikey': self.api_key
         }
+        self.headers = self.key_
+
+        if isinstance(self.user_agent_comment, str):
+            self.headers['User-Agent'] = (
+                    self.headers['User-Agent'] + " " + self.user_agent_comment).strip()
 
         # Rate-limited function for a single requests
         self.make_request = self._get_request_function(
