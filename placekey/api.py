@@ -54,7 +54,7 @@ class PlacekeyAPI:
     BULK_REQUEST_WINDOW = 60
     MAX_BATCH_SIZE = 100
 
-    DEFAULT_USER_AGENT = 'placekey-py / {}'.format(__version__)
+    DEFAULT_USER_AGENT = 'placekey-py/{}'.format(__version__)
 
     DEFAULT_MAX_RETRIES = 20
 
@@ -79,15 +79,16 @@ class PlacekeyAPI:
         self.logger = logger
         self.user_agent_comment = user_agent_comment
 
-        self.headers = {
+        self.key_ = {
             'Content-Type': 'application/json',
-            'User-agent': self.DEFAULT_USER_AGENT,
+            'User-Agent': self.DEFAULT_USER_AGENT,
             'apikey': self.api_key
         }
+        self.headers = self.key_
 
         if isinstance(self.user_agent_comment, str):
-            self.headers['User-agent'] = (
-                    self.headers['User-agent'] + " " + self.user_agent_comment).strip()
+            self.headers['User-Agent'] = (
+                    self.headers['User-Agent'] + " " + self.user_agent_comment).strip()
 
         # Rate-limited function for a single requests
         self.make_request = self._get_request_function(
