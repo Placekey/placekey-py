@@ -1,21 +1,26 @@
 import setuptools
 import os
+import codecs
 
-version_data = {}
-version_path = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), 'placekey', '__version__.py')
-with open(version_path, 'r') as f:
-    for line in f.readlines():
-        if '=' in line:
-            lhs, rhs = line.split('=')
-            version_data[lhs.strip()] = rhs.strip()
+# https://packaging.python.org/guides/single-sourcing-package-version/
+def read(*argv):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, *argv), "r") as fp:
+        return fp.read()
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+def get_version():
+    for line in read("placekey", "__version__.py").splitlines():
+        if line.startswith("__version__"):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    raise RuntimeError("Unable to find version string.")
+
+long_description = read("README.md")
+version = get_version()
 
 setuptools.setup(
     name="placekey",
-    version=version_data['__version__'],
+    version=version,
     author="SafeGraph Inc.",
     author_email="russ@safegraph.com",
     description="Utilities for working with Placekeys",
@@ -29,5 +34,5 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )
