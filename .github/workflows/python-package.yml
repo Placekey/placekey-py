@@ -30,7 +30,7 @@ jobs:
     - name: Env test
       env:
         TEST_SECRET: ${{ secrets.TEST_SECRET }}
-        run: echo $TEST_SECRET
+      run: echo $TEST_SECRET
     - name: Test with pytest
       env:
         PLACEKEY_API_KEY: ${{ secrets.PLACEKEY_API_KEY }}
