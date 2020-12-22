@@ -30,3 +30,6 @@ jobs:
     - name: Test with pytest
       run: |
         pytest placekey/tests/test_placekey.py
+        pytest placekey/tests/test_api.py
+      env:
+        PLACEKEY_API_KEY: ${{ secrets.PLACEKEY_API_KEY }}

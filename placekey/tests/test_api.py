@@ -26,50 +26,79 @@ class TestAPI(unittest.TestCase):
         self.pk_api = PlacekeyAPI(
             api_key=self.api_key, user_agent_comment="placekey-py-tests")
 
-    def test_init(self):
-        """
-        Test __init__
-        """
-        # user agent handling
-        pass
-
     def test_lookup_placekey(self):
         """
         test lookup_placekey
         """
-        # lat long
-        # other info
-        # strict
-        # invalid query
-        pass
+        # A lat/long query
+        self.assertDictEqual(
+            self.pk_api.lookup_placekey(latitude=37.7371, longitude=-122.44283),
+            {'query_id': '0', 'placekey': '@5vg-82n-kzz'}
+        )
 
-    @pytest.mark.slow
-    def test_lookup_placekey_slow(self):
-        """
-        Longer running rate-limit test for lookup_placekey
-        """
-        pass
+        # An address query
+        place = {
+            "street_address": "598 Portola Dr",
+            "city": "San Francisco",
+            "region": "CA",
+            "postal_code": "94131",
+            "iso_country_code": "US"
+        }
+        self.assertDictEqual(
+            self.pk_api.lookup_placekey(**place, strict_address_match=True),
+            {'query_id': '0', 'placekey': '227@5vg-82n-pgk'}
+        )
 
-    def test_lookup_batch(self):
-        """
-        Test lookup_batch
-        """
-        # lat long
-        # other info
-        # strict
-        pass
+        # An invalid query
+        bad_place = {
+            "street_address": "598 Portola Dr",
+            "city": "San Francisco",
+            "region": "CA",
+            "postal_code": "94131",
+            "iso_country_code": "US",
+            "something": "foo"
+        }
+        self.assertFalse(
+            self.pk_api._validate_query(bad_place)
+        )
 
     def test_lookup_placekeys(self):
         """
         Test lookup_placekeys
+
+        This test also covers lookup_batch, as lookup_placekeys is a wrapper
+        for that function.
         """
-
-        #1. Query id handling
-        #2. Error interpolation
-        #3. invalid query
-        # mixed query types
-
-        pass
+        places = [
+            {
+                "street_address": "1543 Mission Street, Floor 3",
+                "city": "San Francisco",
+                "region": "CA",
+                "postal_code": "94105",
+                "iso_country_code": "US"
+            },
+            {
+                "query_id": "thisqueryidaloneiscustom",
+                "location_name": "Twin Peaks Petroleum",
+                "street_address": "598 Portola Dr",
+                "city": "San Francisco",
+                "region": "CA",
+                "postal_code": "94131",
+                "iso_country_code": "US"
+            },
+            {
+                "latitude": 37.7371,
+                "longitude": -122.44283
+            }
+        ]
+        self.assertListEqual(
+            self.pk_api.lookup_placekeys(places),
+            [
+                {'query_id': 'place_0', 'placekey': '226@5vg-7gq-5mk'},
+                {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-222@5vg-82n-pgk'},
+                {'query_id': 'place_2', 'placekey': '@5vg-82n-kzz'}
+            ]
+        )
 
     @pytest.mark.slow
     def test_lookup_placekeys_slow(self):
