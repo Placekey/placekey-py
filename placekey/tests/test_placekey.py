@@ -7,7 +7,7 @@ in the parent directory of this repository.
 import unittest
 import h3.api.basic_int as h3_int
 from shapely.wkt import loads as wkt_loads
-from shapely.geometry import mapping
+from shapely.geometry import shape
 from shapely.ops import transform
 import placekey.placekey as pk
 
@@ -147,8 +147,16 @@ class TestPlacekey(unittest.TestCase):
                '37.77854904616886 -122.4182339224218, '
                '37.77804284141394 -122.4188730164743))'
                )
-        self.assertEqual(pk.placekey_to_wkt(key, geo_json=False), wkt,
-                         'correct WKT conversion')
+        pk_wkt = pk.placekey_to_wkt(key, geo_json=False)
+        try:
+            self.assertEqual(pk_wkt, wkt, 'correct WKT conversion')
+        except AssertionError:
+            # Depending on the system there may be small variations in the least
+            # significant digits of the polygon vertices. This check verifies
+            # that the resulting polygons
+            pk_poly = wkt_loads(pk_wkt)
+            wkt_poly = wkt_loads(wkt)
+            self.assertTrue(pk_poly.almost_equals(wkt_poly, decimal=12))
 
     def test_placekey_to_geojson(self):
         """
@@ -168,8 +176,16 @@ class TestPlacekey(unittest.TestCase):
                 (-122.41971895414808, 37.77820687262237),
                 (-122.41887301647432, 37.77804284141394)),)
         }
-        self.assertEqual(pk.placekey_to_geojson(key), geo_json,
-                         'correct GeoJSON conversion')
+        pk_geojson = pk.placekey_to_geojson(key)
+        try:
+            self.assertEqual(pk_geojson, geo_json, 'correct GeoJSON conversion')
+        except AssertionError:
+            # Depending on the system there may be small variations in the least
+            # significant digits of the polygon vertices. This check verifies
+            # that the resulting polygons
+            pk_poly = shape(pk_geojson)
+            geojson_poly = shape(geo_json)
+            self.assertTrue(pk_poly.almost_equals(geojson_poly, decimal=12))
 
     def test_placekey_format_is_valid(self):
         """
