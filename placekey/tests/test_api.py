@@ -1,12 +1,13 @@
 """
 Placekey API client tests.
 
-pytest -m"not slow" placekey/tests/test_api.py
+To exclude slow tests run `pytest -m"not slow" placekey/tests/test_api.py`.
 """
 
-import unittest
 import os
+import unittest
 import pytest
+import random
 from placekey.api import PlacekeyAPI
 
 
@@ -103,6 +104,15 @@ class TestAPI(unittest.TestCase):
     @pytest.mark.slow
     def test_lookup_placekeys_slow(self):
         """
-        Longer running rate-limit test for lookup_placekeys
+        Longer running rate-limit test for lookup_placekeys. This should run and
+        get a valid result for each item queried.
         """
-        pass
+        random.seed(1)
+        num_samples = 10000
+        lat_long_samples = [
+            {'latitude': random.uniform(-90.0, 90.0), 'longitude': random.uniform(0.0, 180.0)}
+            for _ in range(num_samples)
+        ]
+        results = self.pk_api.lookup_placekeys(lat_long_samples)
+        self.assertEqual(len(results), num_samples)
+        self.assertTrue(all(['placekey' in r for r in results]))
