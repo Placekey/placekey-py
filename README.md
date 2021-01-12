@@ -14,6 +14,8 @@ This package can be installed from [PyPI](https://pypi.org/project/placekey/) by
 pip install placekey
 ```
 
+MacOS Big Sur may need to run `brew install geos` if the installation of the `shapely` dependency fails.
+
 ## Usage
 
 The basic functionality of the Placekey library is conversion between Placekeys and latitude-longitude coordinates.
