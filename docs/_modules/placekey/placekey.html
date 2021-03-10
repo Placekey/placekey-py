@@ -193,6 +193,23 @@
     <span class="k">return</span> <span class="n">_decode_to_h3_int</span><span class="p">(</span><span class="n">where</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="get_neighboring_placekeys"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.get_neighboring_placekeys">[docs]</a><span class="k">def</span> <span class="nf">get_neighboring_placekeys</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the set of Placekeys whose grid distance is `&lt;= dist` from the given</span>
+<span class="sd">    Placekey. In this context, grid distance refers to the number of H3 cells between</span>
+<span class="sd">    two H3 cells, so that neighboring cells have distance 1, neighbors of neighbors have</span>
+<span class="sd">    distance 2, etc.</span>
+
+<span class="sd">    :param placekey: Placekey (string)</span>
+<span class="sd">    :param dist: size of the neighborhood around the input Placekey to return (int)</span>
+<span class="sd">    :return: Set of Placekeys (set)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">h3_integer</span> <span class="o">=</span> <span class="n">placekey_to_h3_int</span><span class="p">(</span><span class="n">placekey</span><span class="p">)</span>
+    <span class="n">neighboring_h3</span> <span class="o">=</span> <span class="n">h3_int</span><span class="o">.</span><span class="n">k_ring</span><span class="p">(</span><span class="n">h3_integer</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">h3_int_to_placekey</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">neighboring_h3</span><span class="p">}</span></div>
+
+
 <div class="viewcode-block" id="placekey_to_hex_boundary"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_hex_boundary">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_hex_boundary</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a Placekey, return the coordinates of the boundary of the hexagon.</span>

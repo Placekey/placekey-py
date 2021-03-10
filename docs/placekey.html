@@ -206,6 +206,26 @@ counter-clockwise orientation. If False assumes tuples will be
 </dd></dl>
 
 <dl class="py function">
+<dt id="placekey.placekey.get_neighboring_placekeys">
+<code class="sig-prename descclassname">placekey.placekey.</code><code class="sig-name descname">get_neighboring_placekeys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">placekey</span></em>, <em class="sig-param"><span class="n">dist</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/placekey.html#get_neighboring_placekeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.placekey.get_neighboring_placekeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the set of Placekeys whose grid distance is <cite>&lt;= dist</cite> from the given
+Placekey. In this context, grid distance refers to the number of H3 cells between
+two H3 cells, so that neighboring cells have distance 1, neighbors of neighbors have
+distance 2, etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>placekey</strong> – Placekey (string)</p></li>
+<li><p><strong>dist</strong> – size of the neighborhood around the input Placekey to return (int)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of Placekeys (set)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="placekey.placekey.get_prefix_distance_dict">
 <code class="sig-prename descclassname">placekey.placekey.</code><code class="sig-name descname">get_prefix_distance_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/placekey.html#get_prefix_distance_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#placekey.placekey.get_prefix_distance_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a dictionary mapping the length of a shared Placekey prefix to the
