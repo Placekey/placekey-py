@@ -154,6 +154,23 @@ def placekey_to_h3_int(placekey):
     return _decode_to_h3_int(where)
 
 
+def get_neighboring_placekeys(placekey, dist=1):
+    """
+    Return the set of Placekeys whose grid distance is `<= dist` from the given
+    Placekey. In this context, grid distance refers to the number of cells between
+    two cells, so that neighboring cells have distance 1, neighbors of neighbors have
+    distance 2, etc.
+
+    :param placekey: Placekey (string)
+    :param dist: size of the neighborhood around the input Placekey to return (int)
+    :return: Set of Placekeys (set)
+
+    """
+    h3_integer = placekey_to_h3_int(placekey)
+    neighboring_h3 = h3_int.k_ring(h3_integer, dist)
+    return {h3_int_to_placekey(h) for h in neighboring_h3}
+
+
 def placekey_to_hex_boundary(placekey, geo_json=False):
     """
     Given a Placekey, return the coordinates of the boundary of the hexagon.
