@@ -118,6 +118,25 @@ class TestPlacekey(unittest.TestCase):
         self.assertEqual(pk._dirty_string('pregr'), 'prngr',
                          "dirty overlapping bad words in sequence order")
 
+    def test_get_neighboring_placekeys(self):
+        """
+        Test generation of neighboring placekeys
+        """
+        key = '@5vg-7gq-tvz'
+        neighbors_dist1 = {
+            '@5vg-7gq-7nq',
+            '@5vg-7gq-7t9',
+            '@5vg-7gq-gx5',
+            '@5vg-7gq-tjv',
+            '@5vg-7gq-tvz',
+            '@5vg-7gq-ty9',
+            '@5vg-7gq-v2k'}
+
+        self.assertSetEqual(pk.get_neighboring_placekeys(key, 0), {key},
+                            "placekey is its only neighbor of distance 0")
+        self.assertSetEqual(pk.get_neighboring_placekeys(key, 1), neighbors_dist1,
+                            "placekey neighbors of distance 1 correct")
+
     def test_placekey_to_hex_boundary(self):
         """
         Test placekey to geo boundary conversion
