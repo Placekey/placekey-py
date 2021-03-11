@@ -156,7 +156,7 @@ def placekey_to_h3_int(placekey):
 
 def get_neighboring_placekeys(placekey, dist=1):
     """
-    Return the set of Placekeys whose grid distance is `<= dist` from the given
+    Return the unordered set of Placekeys whose grid distance is `<= dist` from the given
     Placekey. In this context, grid distance refers to the number of H3 cells between
     two H3 cells, so that neighboring cells have distance 1, neighbors of neighbors have
     distance 2, etc.
