@@ -31,6 +31,5 @@ jobs:
       env:
         PLACEKEY_API_KEY: ${{ secrets.PLACEKEY_API_KEY }}
       run: |
-        if [[ ! -v PLACEKEY_API_KEY ]]; then echo "PLACEKEY_API_KEY is not set" fi
         pytest placekey/tests/test_placekey.py
         pytest -m"not slow" placekey/tests/test_api.py
