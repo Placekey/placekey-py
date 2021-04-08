@@ -46,7 +46,7 @@ FIRST_TUPLE_REGEX = '[' + ALPHABET + REPLACEMENT_CHARS + PADDING_CHAR + ']{3}'
 TUPLE_REGEX = '[' + ALPHABET + REPLACEMENT_CHARS + ']{3}'
 WHERE_REGEX = re.compile(
     '^' + '-'.join([FIRST_TUPLE_REGEX, TUPLE_REGEX, TUPLE_REGEX]) + '$')
-WHAT_REGEX = re.compile('^[' + ALPHABET + ']{3}(-[' + ALPHABET + ']{3})?$')
+WHAT_REGEX = re.compile('^[' + ALPHABET + ']{3,}(-[' + ALPHABET + ']{3,})?$')
 
 
 def _get_header_int():
