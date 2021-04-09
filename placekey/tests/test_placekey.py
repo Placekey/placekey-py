@@ -218,6 +218,12 @@ class TestPlacekey(unittest.TestCase):
                         'single tuple what with where')
         self.assertTrue(pk.placekey_format_is_valid('222-zzz@5vg-7gq-tvz'),
                         'double tuple what with where')
+        self.assertTrue(pk.placekey_format_is_valid('2222-zzz@5vg-7gq-tvz'),
+                        'long address encoding with where')
+        self.assertTrue(pk.placekey_format_is_valid('222-zzzz@5vg-7gq-tvz'),
+                        'long poi encoding with where')
+        self.assertTrue(pk.placekey_format_is_valid('22222222-zzzzzzzzz@5vg-7gq-tvz'),
+                        'long address and poi encoding with where')
 
         self.assertFalse(pk.placekey_format_is_valid('@abc'), 'short where part')
         self.assertFalse(pk.placekey_format_is_valid('abc-xyz'), 'short where part')
@@ -229,7 +235,9 @@ class TestPlacekey(unittest.TestCase):
         self.assertFalse(pk.placekey_format_is_valid('bcd-345@'),
                          'missing what part')
         self.assertFalse(pk.placekey_format_is_valid('22-zzz@abc-234-xyz'),
-                         'short what part')
+                         'short address encoding')
+        self.assertFalse(pk.placekey_format_is_valid('222-zz@abc-234-xyz'),
+                         'short poi encoding')
 
         self.assertFalse(pk.placekey_format_is_valid('@abc-234-xyz'), 'invalid where value')
 
