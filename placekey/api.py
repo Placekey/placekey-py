@@ -10,7 +10,7 @@ console_log = logging.StreamHandler()
 console_log.setFormatter(
     logging.Formatter('%(asctime)s\t%(levelname)s\t%(message)s')
 )
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 log.setLevel(logging.ERROR)
 log.handlers = [console_log]
 
