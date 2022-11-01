@@ -335,7 +335,10 @@ def placekey_format_is_valid(placekey):
     :return: True if the Placekey is valid, False otherwise
 
     """
-    what, where = _parse_placekey(placekey)
+    try:
+        what, where = _parse_placekey(placekey)
+    except ValueError:
+        return False
 
     if what:
         return _where_part_is_valid(where) and bool(WHAT_REGEX.match(what))
