@@ -240,6 +240,7 @@ class TestPlacekey(unittest.TestCase):
                          'short poi encoding')
 
         self.assertFalse(pk.placekey_format_is_valid('@abc-234-xyz'), 'invalid where value')
+        self.assertFalse(pk.placekey_format_is_valid('@@5vg-7gq-tvz'), 'multiple @ in placekey')
 
     def test_where_part_is_valid(self):
         """
