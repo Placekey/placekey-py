@@ -4,7 +4,7 @@ import itertools
 import requests
 from ratelimit import limits, RateLimitException
 from backoff import on_exception, fibo
-from .__init__ import __version__
+from .__version__ import __version__
 
 console_log = logging.StreamHandler()
 console_log.setFormatter(
