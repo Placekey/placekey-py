@@ -4,7 +4,7 @@
 [![PyPI downloads](https://img.shields.io/pypi/dm/placekey)](https://pypistats.org/packages/placekey)
 [![version](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-A Python library for working with [Placekeys](https://placekey.io). Documentation for this package can be found [here](https://placekey.github.io/placekey-py/), and documentation for the Placekey service API can be found [here](https://docs.placekey.io/). The Plackey design specification is available [here](https://docs.placekey.io/Placekey_Technical_White_Paper.pdf). The details in Placekey encoding is [here](https://docs.placekey.io/Placekey_Encoding_Specification%20White_Paper.pdf). We welcome your feedback. 
+A Python library for working with [Placekeys](https://placekey.io). Documentation for this package can be found [here](https://placekey.github.io/placekey-py/), and documentation for the Placekey service API can be found [here](https://docs.placekey.io/). The Plackey design specification is available [here](https://docs.placekey.io/Placekey_Technical_White_Paper.pdf). The details in Placekey encoding is [here](https://docs.placekey.io/Placekey_Encoding_Specification%20White_Paper.pdf). We welcome your feedback.
 
 ## Installation
 
@@ -134,7 +134,7 @@ The `PlacekeyAPI.lookup_placekeys` method can be used to lookup Placekeys for mu
 >>>   }
 >>> ]
 >>> pk_api.lookup_placekeys(places)
-[{'query_id': 'place_0', 'placekey': '226@5vg-7gq-5mk'},
+[{'query_id': 'place_0', 'placekey': '0rsdbudq45@5vg-7gt-tn5'},
  {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-222@5vg-82n-pgk'},
  {'query_id': 'place_2', 'placekey': '@5vg-82n-kzz'}]
 ```

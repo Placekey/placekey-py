@@ -95,7 +95,7 @@ class TestAPI(unittest.TestCase):
         self.assertListEqual(
             self.pk_api.lookup_placekeys(places),
             [
-                {'query_id': 'place_0', 'placekey': '226@5vg-7gq-5mk'},
+                {'query_id': 'place_0', 'placekey': '0rsdbudq45@5vg-7gt-tn5'},
                 {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-222@5vg-82n-pgk'},
                 {'query_id': 'place_2', 'placekey': '@5vg-82n-kzz'}
             ]

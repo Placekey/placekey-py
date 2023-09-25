@@ -1,2 +1,4 @@
 docsrc/build/
 **/*.pyc
+.tool-versions
+placekey.egg-info/
