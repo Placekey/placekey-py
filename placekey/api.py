@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.ERROR)
 log.handlers = [console_log]
 
+
 class PlacekeyAPI:
     """
     PlacekeyAPI class
@@ -284,6 +285,10 @@ class PlacekeyAPI:
                 data=json.dumps(data).encode('utf-8')
             )
 
+            if response.status_code == 429:
+                raise RateLimitException("Rate limit exceeded", 0)
+
+            # Assumption: A code other than 429 is handled by calling function
             return response
 
         return make_request
