@@ -3,7 +3,6 @@ Placekey API client tests.
 
 To exclude slow tests run `pytest -m"not slow" placekey/tests/test_api.py`.
 """
-import concurrent
 import os
 import random
 import unittest
@@ -117,7 +116,7 @@ class TestAPI(unittest.TestCase):
             {'latitude': random.uniform(-90.0, 90.0), 'longitude': random.uniform(0.0, 180.0)}
             for _ in range(num_samples)
         ]
-        results = self.pk_api.lookup_placekeys(lat_long_samples, verbose=True)
+        results = self.pk_api.lookup_placekeys(lat_long_samples)
         self.assertEqual(len(results), num_samples)
         self.assertTrue(all(['placekey' in r for r in results]))
 
