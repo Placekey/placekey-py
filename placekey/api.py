@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 import itertools
@@ -13,7 +14,6 @@ console_log.setFormatter(
 log = logging.getLogger(__name__)
 log.setLevel(logging.ERROR)
 log.handlers = [console_log]
-
 
 class PlacekeyAPI:
     """
@@ -131,11 +131,7 @@ class PlacekeyAPI:
         if strict_name_match:
             payload['options'] = {"strict_name_match": True}
 
-        # Make request, and retry if there is a server-side rate limit error
-        while True:
-            result = self.make_request(payload)
-            if result.status_code != 429:
-                break
+        result = self.make_request(payload)
 
         return json.loads(result.text)
 
@@ -203,7 +199,7 @@ class PlacekeyAPI:
                 )
             except RateLimitException:
                 self.logger.error(
-                    'Fatal error encountered. Returning processed items.')
+                    'Fatal error encountered. Returning processed items at size %s of %s', i, len(places))
                 break
 
             # Catch case where all queries in batch having an error,
@@ -212,7 +208,7 @@ class PlacekeyAPI:
                 self.logger.info(
                     'All queries in batch (%s, %s) had errors', i, max_batch_idx)
 
-                res = [{'query_id': query_id,  'error': res['error']}
+                res = [{'query_id': query_id, 'error': res['error']}
                        for query_id in batch_query_ids]
 
             # Catch other server-side errors
@@ -252,7 +248,7 @@ class PlacekeyAPI:
         if len(places) > self.MAX_BATCH_SIZE:
             raise ValueError(
                 '{} places submitted. The number of places in a batch can be at most {}'
-                .format(len(places), self.MAX_BATCH_SIZE)
+                    .format(len(places), self.MAX_BATCH_SIZE)
             )
 
         batch_payload = {
@@ -263,11 +259,7 @@ class PlacekeyAPI:
         if strict_name_match:
             batch_payload['options'] = {"strict_name_match": True}
 
-        # Make request, and retry if there is a server-side rate limit error
-        while True:
-            result = self.make_bulk_request(batch_payload)
-            if result.status_code != 429:
-                break
+        result = self.make_bulk_request(batch_payload)
 
         return json.loads(result.text)
 
@@ -283,12 +275,15 @@ class PlacekeyAPI:
         :param  period: length of rate limiting time period in seconds
         :param max_tries: the maximum number of retries before giving up
         """
+
         @on_exception(fibo, RateLimitException, max_tries=max_tries)
         @limits(calls=calls, period=period)
         def make_request(data):
-            return requests.post(
+            response = requests.post(
                 url, headers=self.headers,
                 data=json.dumps(data).encode('utf-8')
             )
+
+            return response
 
         return make_request
