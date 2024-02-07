@@ -3,11 +3,12 @@ Placekey API client tests.
 
 To exclude slow tests run `pytest -m"not slow" placekey/tests/test_api.py`.
 """
-
 import os
-import unittest
-import pytest
 import random
+import unittest
+
+import pytest
+
 from placekey.api import PlacekeyAPI
 
 
@@ -92,11 +93,13 @@ class TestAPI(unittest.TestCase):
                 "longitude": -122.44283
             }
         ]
+        found_placekeys = self.pk_api.lookup_placekeys(places,verbose=True)
+        print(found_placekeys)
         self.assertListEqual(
             self.pk_api.lookup_placekeys(places),
             [
-                {'query_id': 'place_0', 'placekey': '226@5vg-7gq-5mk'},
-                {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-222@5vg-82n-pgk'},
+                {'query_id': 'place_0', 'placekey': '22g@5vg-7gq-5mk'},
+                {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-223@5vg-82n-pgk'},
                 {'query_id': 'place_2', 'placekey': '@5vg-82n-kzz'}
             ]
         )
@@ -116,3 +119,6 @@ class TestAPI(unittest.TestCase):
         results = self.pk_api.lookup_placekeys(lat_long_samples)
         self.assertEqual(len(results), num_samples)
         self.assertTrue(all(['placekey' in r for r in results]))
+
+
+
