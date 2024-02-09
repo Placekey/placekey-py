@@ -224,6 +224,10 @@ class TestPlacekey(unittest.TestCase):
                         'long poi encoding with where')
         self.assertTrue(pk.placekey_format_is_valid('22222222-zzzzzzzzz@5vg-7gq-tvz'),
                         'long address and poi encoding with where')
+        self.assertTrue(pk.placekey_format_is_valid('0rsdbudq45@5vg-7gt-tn5'),
+                        'version 2 encoding with where beginning with 0')
+        self.assertTrue(pk.placekey_format_is_valid('1rsdbudq45@5vg-7gt-tn5'),
+                        'version 2 encoding beginning with 1')
 
         self.assertFalse(pk.placekey_format_is_valid('@abc'), 'short where part')
         self.assertFalse(pk.placekey_format_is_valid('abc-xyz'), 'short where part')
@@ -238,6 +242,8 @@ class TestPlacekey(unittest.TestCase):
                          'short address encoding')
         self.assertFalse(pk.placekey_format_is_valid('222-zz@abc-234-xyz'),
                          'short poi encoding')
+        self.assertFalse(pk.placekey_format_is_valid('7rsdbudq45@5vg-7gt-tn5'),
+                        'version 2 encoding illegal leading character(7)')
 
         self.assertFalse(pk.placekey_format_is_valid('@abc-234-xyz'), 'invalid where value')
         self.assertFalse(pk.placekey_format_is_valid('@@5vg-7gq-tvz'), 'multiple @ in placekey')
