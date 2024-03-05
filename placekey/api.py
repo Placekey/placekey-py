@@ -2,6 +2,8 @@ import hashlib
 import json
 import logging
 import itertools
+from typing import List
+
 import requests
 from ratelimit import limits, RateLimitException
 from backoff import on_exception, fibo
@@ -33,6 +35,7 @@ class PlacekeyAPI:
     * postal_code (string)
     * iso_country_code (string)
     * query_id (string)
+    * place_metadata (dict[str,str])
 
     See the `Placekey API documentation <https://docs.placekey.io/>`_ for more
     information on how to use the API.
@@ -59,6 +62,8 @@ class PlacekeyAPI:
 
     DEFAULT_MAX_RETRIES = 20
 
+    PLACE_METADATA_CONSTANT = 'place_metadata'
+
     QUERY_PARAMETERS = {
         'latitude',
         'longitude',
@@ -68,7 +73,16 @@ class PlacekeyAPI:
         'region',
         'postal_code',
         'iso_country_code',
-        'query_id'
+        'query_id',
+        PLACE_METADATA_CONSTANT
+    }
+
+    PLACE_METADATA_PARAMETERS = {
+        'store_id',
+        'phone_number',
+        'website',
+        'naics_code',
+        'mcc_code'
     }
 
     DEFAULT_QUERY_ID_PREFIX = "place_"
@@ -105,19 +119,14 @@ class PlacekeyAPI:
             max_tries=self.max_retries)
 
     def lookup_placekey(self,
-                        strict_address_match=False,
-                        strict_name_match=False,
+                        fields=None,
                         **kwargs):
         """
         Lookup the Placekey for a single place.
 
-        :param strict_address_match: Boolean for whether or not to strict match
-            on address fields. Defaults to `False`.
-        :param strict_name_match: Boolean for whether or not to strict match
-            on `location_name`. Defaults to `False`.
         :kwargs: Place fields can be passed to this method as keyword arguments. The allowed
             keyword arguments are ['latitude', 'longitude', 'location_name','street_address',
-            'city', 'region', 'postal_code', 'iso_country_code', 'query_id']
+            'city', 'region', 'postal_code', 'iso_country_code', 'query_id', 'place_metadata']
 
         :return: A Placekey API response (dict)
 
@@ -127,10 +136,8 @@ class PlacekeyAPI:
                 "Query contains keys other than: {}".format(self.QUERY_PARAMETERS))
 
         payload = {"query": kwargs}
-        if strict_address_match:
-            payload['options'] = {"strict_address_match": True}
-        if strict_name_match:
-            payload['options'] = {"strict_name_match": True}
+        if fields:
+            payload['options'] = {'fields': fields}
 
         result = self.make_request(payload)
 
@@ -138,8 +145,7 @@ class PlacekeyAPI:
 
     def lookup_placekeys(self,
                          places,
-                         strict_address_match=False,
-                         strict_name_match=False,
+                         fields=None,
                          batch_size=MAX_BATCH_SIZE,
                          verbose=False):
         """
@@ -156,10 +162,8 @@ class PlacekeyAPI:
         This method follows the rate limits of the Placekey API.
 
         :param places: An iterable of of place dictionaries.
-        :param strict_address_match: Boolean for whether or not to strict match
-            on address fields. Defaults to `False`.
-        :param strict_name_match: Boolean for whether or not to strict match
-            on `location_name`. Defaults to `False`.
+        :param fields: A list of requested parameters other than placekey. For example: address_placekey, building_placekey
+            Defaults to None
         :param batch_size: Integer for the number of places to lookup in a single batch.
             Defaults to 100, and cannot exceeded 100.
         :param verbose: Boolean for whether or not to log additional information.
@@ -195,8 +199,7 @@ class PlacekeyAPI:
             try:
                 res = self.lookup_batch(
                     places[i:max_batch_idx],
-                    strict_address_match=strict_address_match,
-                    strict_name_match=strict_name_match
+                    fields=fields
                 )
             except RateLimitException:
                 self.logger.error(
@@ -230,18 +233,15 @@ class PlacekeyAPI:
         return result_list
 
     def lookup_batch(self, places,
-                     strict_address_match=False,
-                     strict_name_match=False):
+                     fields=None):
         """
         Lookup Placekeys for a single batch of places specified by place dictionaries.
         The batch size can be at most 100 places. This method respects the rate limits
         of the Placekey API.
 
         :param places: An iterable of of place dictionaries.
-        :param strict_address_match: Boolean for whether or not to strict match
-            on address fields. Defaults to `False`.
-        :param strict_name_match: Boolean for whether or not to strict match
-            on `location_name`. Defaults to `False`.
+        :param fields: A list of requested parameters other than placekey. For example: address_placekey, building_placekey
+            Defaults to None
 
         :return: A list of Placekey API responses for each place (list(dict))
 
@@ -255,17 +255,18 @@ class PlacekeyAPI:
         batch_payload = {
             "queries": places
         }
-        if strict_address_match:
-            batch_payload['options'] = {"strict_address_match": True}
-        if strict_name_match:
-            batch_payload['options'] = {"strict_name_match": True}
+        if fields:
+            batch_payload['options'] = {"fields": fields}
 
         result = self.make_bulk_request(batch_payload)
 
         return json.loads(result.text)
 
     def _validate_query(self, query_dict):
-        return set(query_dict.keys()).issubset(self.QUERY_PARAMETERS)
+        query_dict_keys = query_dict.keys()
+        top_level_check = set(query_dict_keys).issubset(self.QUERY_PARAMETERS)
+        place_metadata_check = set(query_dict.get(self.PLACE_METADATA_CONSTANT).keys()).issubset(self.PLACE_METADATA_PARAMETERS) if(self.PLACE_METADATA_CONSTANT in query_dict_keys) else True
+        return top_level_check and place_metadata_check
 
     def _get_request_function(self, url, calls, period, max_tries):
         """
