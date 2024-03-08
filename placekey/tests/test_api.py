@@ -44,11 +44,12 @@ class TestAPI(unittest.TestCase):
             "city": "San Francisco",
             "region": "CA",
             "postal_code": "94131",
-            "iso_country_code": "US"
+            "iso_country_code": "US",
+            "place_metadata": {"naics_code": "45115"}
         }
         self.assertDictEqual(
-            self.pk_api.lookup_placekey(**place, strict_address_match=True),
-            {'query_id': '0', 'placekey': '227@5vg-82n-pgk'}
+            self.pk_api.lookup_placekey(**place, fields=["address_placekey"]),
+            {'query_id': '0', 'placekey': '227@5vg-82n-pgk', 'address_placekey': '227@5vg-82n-pgk'}
         )
 
         # An invalid query
