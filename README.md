@@ -98,14 +98,18 @@ The `PlacekeyAPI.lookup_placekey` method can be used to lookup the Placekey for 
 
 ```python
 >>> place = {
+>>>   "location_name": "Twin Peaks Petroleum",
 >>>   "street_address": "598 Portola Dr",
 >>>   "city": "San Francisco",
 >>>   "region": "CA",
 >>>   "postal_code": "94131",
 >>>   "iso_country_code": "US"
 >>> }
->>> pk_api.lookup_placekey(**place)
-{'query_id': '0', 'placekey': '227@5vg-82n-pgk'}
+>>> pk_api.lookup_placekey(**place, fields=["building_placekey","address_placekey"])
+{'query_id': '0',
+ 'placekey': '227-223@5vg-82n-pgk',
+ 'address_placekey': '227@5vg-82n-pgk',
+ 'building_placekey': '227@5vg-82n-pgk'}
 ```
 
 The `PlacekeyAPI.lookup_placekeys` method can be used to lookup Placekeys for multiple places.
