@@ -104,7 +104,7 @@ The `PlacekeyAPI.lookup_placekey` method can be used to lookup the Placekey for 
 >>>   "postal_code": "94131",
 >>>   "iso_country_code": "US"
 >>> }
->>> pk_api.lookup_placekey(**place, strict_address_match=True)
+>>> pk_api.lookup_placekey(**place)
 {'query_id': '0', 'placekey': '227@5vg-82n-pgk'}
 ```
 
