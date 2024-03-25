@@ -1,0 +1,62 @@
+name: Build and Upload Python Package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+environment:
+  name: testpypi
+  url: https://test.pypi.org/p/placekey
+
+jobs:
+  build-n-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip setuptools wheel build twine
+
+      - name: Extract tag name
+        id: tag
+        run: echo ::set-output name=TAG_NAME::$(echo $GITHUB_REF | cut -d / -f 3)
+
+      - name: Build distribution
+        run: |
+          python -m build --sdist
+          python -m build --wheel
+
+      - name: Check distribution
+        run: twine check dist/*
+
+      - name: Upload to TestPyPI
+        env:
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN}}
+        run: |
+          twine upload --repository testpypi dist/*
+
+      - name: Install package from TestPyPI
+        run: |
+          pip install --index-url https://test.pypi.org/simple/ placekey
+
+      - name: Run test Query
+        env:
+          PLACEKEY_API_KEY: ${{ secrets.PLACEKEY_API_KEY }}
+        run: |
+          python -c "import os; from placekey.api import PlacekeyAPI; api = PlacekeyAPI(api_key=os.environ['PLACEKEY_API_KEY'], user_agent_comment='placekey-py-tests'); place = {'location_name': 'Pinecrest Food Market', 'street_address': '401 Pinecrest Lake Rd', 'city': 'Pinecrest', 'region': 'CA', 'postal_code': '95364', 'iso_country_code': 'US'}; print(api.lookup_placekeys([place], verbose=True))"
+
+#      - name: Upload to PyPi
+#        env:
+#          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN}}
+#        run: |
+#          twine upload dist/*
