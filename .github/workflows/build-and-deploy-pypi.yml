@@ -40,6 +40,7 @@ jobs:
       - name: Install package from TestPyPI
         run: |
           pip install --index-url https://test.pypi.org/simple/ placekey
+          pip install h3 shapely requests ratelimit backoff
 
       - name: Run test Query
         env:
