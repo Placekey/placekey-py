@@ -1,4 +1,3 @@
-# run_test_query.py
 import os
 from placekey.api import PlacekeyAPI
 
@@ -14,6 +13,7 @@ def main():
         'iso_country_code': 'US'
     }
     print(api.lookup_placekeys([place], verbose=True))
+
 
 if __name__ == '__main__':
     main()
