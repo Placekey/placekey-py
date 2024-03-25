@@ -1,10 +1,9 @@
 name: Build and Upload Python Package
 
-# on:
-#   release:
-#     types: [push]
+ on:
+   release:
+     types: [published]
 
-on: [push]
 
 permissions:
   contents: read
@@ -33,25 +32,14 @@ jobs:
       - name: Check distribution
         run: twine check dist/*
 
-#      - name: Upload to TestPyPI
-#        env:
-#          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN}}
-#        run: |
-#          twine upload --repository testpypi dist/*
-
-      - name: Install package from TestPyPI
-        run: |
-          python -m pip install --upgrade pip
-          pip install --index-url https://test.pypi.org/simple/ placekey==0.0.16.2
-          pip install h3 shapely requests ratelimit backoff
-
-      - name: Run test query script
+      - name: Upload to TestPyPI
         env:
-          PLACEKEY_API_KEY: ${{ secrets.PLACEKEY_API_KEY }}
-        run: python run_test_query.py
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN}}
+        run: |
+          twine upload --repository testpypi dist/*
 
-#      - name: Upload to PyPi
-#        env:
-#          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN}}
-#        run: |
-#          twine upload dist/*
+      - name: Upload to PyPi
+        env:
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN}}
+        run: |
+          twine upload dist/*
