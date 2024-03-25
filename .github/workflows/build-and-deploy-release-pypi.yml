@@ -1,8 +1,8 @@
 name: Build and Upload Python Package
 
- on:
-   release:
-     types: [published]
+on:
+ release:
+   types: [published]
 
 
 permissions:
