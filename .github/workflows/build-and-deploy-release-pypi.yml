@@ -1,8 +1,10 @@
 name: Build and Upload Python Package
 
-on:
-  release:
-    types: [push]
+# on:
+#   release:
+#     types: [push]
+
+on: [push]
 
 permissions:
   contents: read
