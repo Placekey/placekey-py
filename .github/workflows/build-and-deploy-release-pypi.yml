@@ -2,7 +2,7 @@ name: Build and Upload Python Package
 
 on:
   release:
-    types: [psuh]
+    types: [push]
 
 permissions:
   contents: read
