@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Placekey &#8212; placekey 0.0.1 documentation</title>
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Placekey &#8212; placekey 0.0.17 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=601dbdee" />
+    <script src="_static/documentation_options.js?v=63b572e7"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Submodules" href="placekey.html" />
@@ -33,7 +31,7 @@
         <li class="right" >
           <a href="index.html" title="Placekey-py documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.17 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Placekey</a></li> 
       </ul>
     </div>  
@@ -43,18 +41,45 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="placekey">
-<h1>Placekey<a class="headerlink" href="#placekey" title="Permalink to this headline">¶</a></h1>
+  <section id="placekey">
+<h1>Placekey<a class="headerlink" href="#placekey" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="placekey.html">Submodules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="placekey.html#module-placekey.api">placekey.api</a></li>
-<li class="toctree-l2"><a class="reference internal" href="placekey.html#module-placekey.placekey">placekey.placekey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="placekey.html#module-placekey.api">placekey.api</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.api.PlacekeyAPI"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="placekey.html#placekey.api.PlacekeyAPI.lookup_batch"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="placekey.html#placekey.api.PlacekeyAPI.lookup_placekey"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekey()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="placekey.html#placekey.api.PlacekeyAPI.lookup_placekeys"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekeys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="placekey.html#module-placekey.placekey">placekey.placekey</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.geo_to_placekey"><code class="docutils literal notranslate"><span class="pre">geo_to_placekey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.geojson_to_placekeys"><code class="docutils literal notranslate"><span class="pre">geojson_to_placekeys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.get_neighboring_placekeys"><code class="docutils literal notranslate"><span class="pre">get_neighboring_placekeys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.get_prefix_distance_dict"><code class="docutils literal notranslate"><span class="pre">get_prefix_distance_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.h3_int_to_placekey"><code class="docutils literal notranslate"><span class="pre">h3_int_to_placekey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.h3_to_placekey"><code class="docutils literal notranslate"><span class="pre">h3_to_placekey()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_distance"><code class="docutils literal notranslate"><span class="pre">placekey_distance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_format_is_valid"><code class="docutils literal notranslate"><span class="pre">placekey_format_is_valid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_to_geo"><code class="docutils literal notranslate"><span class="pre">placekey_to_geo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_to_geojson"><code class="docutils literal notranslate"><span class="pre">placekey_to_geojson()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_to_h3"><code class="docutils literal notranslate"><span class="pre">placekey_to_h3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_to_h3_int"><code class="docutils literal notranslate"><span class="pre">placekey_to_h3_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_to_hex_boundary"><code class="docutils literal notranslate"><span class="pre">placekey_to_hex_boundary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_to_polygon"><code class="docutils literal notranslate"><span class="pre">placekey_to_polygon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.placekey_to_wkt"><code class="docutils literal notranslate"><span class="pre">placekey_to_wkt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.polygon_to_placekeys"><code class="docutils literal notranslate"><span class="pre">polygon_to_placekeys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="placekey.html#placekey.placekey.wkt_to_placekeys"><code class="docutils literal notranslate"><span class="pre">wkt_to_placekeys()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -63,12 +88,16 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Placekey-py documentation</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="placekey.html"
-                        title="next chapter">Submodules</a></p>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Placekey-py documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="placekey.html"
+                          title="next chapter">Submodules</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -80,12 +109,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -105,13 +134,13 @@
         <li class="right" >
           <a href="index.html" title="Placekey-py documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.17 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Placekey</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020, SafeGraph Inc..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    &#169; Copyright 2020, SafeGraph Inc..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>

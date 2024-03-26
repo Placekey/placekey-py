@@ -1,18 +1,15 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>placekey.api &#8212; placekey 0.0.1 documentation</title>
-    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+    <title>placekey.api &#8212; placekey 0.0.17 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=601dbdee" />
+    <script src="../../_static/documentation_options.js?v=63b572e7"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
@@ -25,7 +22,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.17 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">placekey.api</a></li> 
       </ul>
@@ -37,25 +34,30 @@
           <div class="body" role="main">
             
   <h1>Source code for placekey.api</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span></span><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">ratelimit</span> <span class="kn">import</span> <span class="n">limits</span><span class="p">,</span> <span class="n">RateLimitException</span>
 <span class="kn">from</span> <span class="nn">backoff</span> <span class="kn">import</span> <span class="n">on_exception</span><span class="p">,</span> <span class="n">fibo</span>
-<span class="kn">from</span> <span class="nn">.__init__</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
 
 <span class="n">console_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
 <span class="n">console_log</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="se">\t</span><span class="si">%(levelname)s</span><span class="se">\t</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="p">)</span>
-<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 <span class="n">log</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[</span><span class="n">console_log</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="PlacekeyAPI"><a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI">[docs]</a><span class="k">class</span> <span class="nc">PlacekeyAPI</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PlacekeyAPI">
+<a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI">[docs]</a>
+<span class="k">class</span> <span class="nc">PlacekeyAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    PlacekeyAPI class</span>
 
 <span class="sd">    This class provides functionality for looking up Placekeys using the Placekey</span>
@@ -71,6 +73,7 @@
 <span class="sd">    * postal_code (string)</span>
 <span class="sd">    * iso_country_code (string)</span>
 <span class="sd">    * query_id (string)</span>
+<span class="sd">    * place_metadata (dict[str,str])</span>
 
 <span class="sd">    See the `Placekey API documentation &lt;https://docs.placekey.io/&gt;`_ for more</span>
 <span class="sd">    information on how to use the API.</span>
@@ -97,6 +100,8 @@
 
     <span class="n">DEFAULT_MAX_RETRIES</span> <span class="o">=</span> <span class="mi">20</span>
 
+    <span class="n">PLACE_METADATA_CONSTANT</span> <span class="o">=</span> <span class="s1">&#39;place_metadata&#39;</span>
+
     <span class="n">QUERY_PARAMETERS</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;latitude&#39;</span><span class="p">,</span>
         <span class="s1">&#39;longitude&#39;</span><span class="p">,</span>
@@ -106,7 +111,16 @@
         <span class="s1">&#39;region&#39;</span><span class="p">,</span>
         <span class="s1">&#39;postal_code&#39;</span><span class="p">,</span>
         <span class="s1">&#39;iso_country_code&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;query_id&#39;</span>
+        <span class="s1">&#39;query_id&#39;</span><span class="p">,</span>
+        <span class="n">PLACE_METADATA_CONSTANT</span>
+    <span class="p">}</span>
+
+    <span class="n">PLACE_METADATA_PARAMETERS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;store_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;phone_number&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;website&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;naics_code&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mcc_code&#39;</span>
     <span class="p">}</span>
 
     <span class="n">DEFAULT_QUERY_ID_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;place_&quot;</span>
@@ -142,20 +156,17 @@
             <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">BULK_REQUEST_WINDOW</span><span class="p">,</span>
             <span class="n">max_tries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PlacekeyAPI.lookup_placekey"><a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI.lookup_placekey">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_placekey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                        <span class="n">strict_address_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">strict_name_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="PlacekeyAPI.lookup_placekey">
+<a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI.lookup_placekey">[docs]</a>
+    <span class="k">def</span> <span class="nf">lookup_placekey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lookup the Placekey for a single place.</span>
 
-<span class="sd">        :param strict_address_match: Boolean for whether or not to strict match</span>
-<span class="sd">            on address fields. Defaults to `False`.</span>
-<span class="sd">        :param strict_name_match: Boolean for whether or not to strict match</span>
-<span class="sd">            on `location_name`. Defaults to `False`.</span>
 <span class="sd">        :kwargs: Place fields can be passed to this method as keyword arguments. The allowed</span>
 <span class="sd">            keyword arguments are [&#39;latitude&#39;, &#39;longitude&#39;, &#39;location_name&#39;,&#39;street_address&#39;,</span>
-<span class="sd">            &#39;city&#39;, &#39;region&#39;, &#39;postal_code&#39;, &#39;iso_country_code&#39;, &#39;query_id&#39;]</span>
+<span class="sd">            &#39;city&#39;, &#39;region&#39;, &#39;postal_code&#39;, &#39;iso_country_code&#39;, &#39;query_id&#39;, &#39;place_metadata&#39;]</span>
 
 <span class="sd">        :return: A Placekey API response (dict)</span>
 
@@ -165,26 +176,22 @@
                 <span class="s2">&quot;Query contains keys other than: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">QUERY_PARAMETERS</span><span class="p">))</span>
 
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">strict_address_match</span><span class="p">:</span>
-            <span class="n">payload</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;strict_address_match&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">strict_name_match</span><span class="p">:</span>
-            <span class="n">payload</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;strict_name_match&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="n">fields</span><span class="p">}</span>
 
-        <span class="c1"># Make request, and retry if there is a server-side rate limit error</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">429</span><span class="p">:</span>
-                <span class="k">break</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PlacekeyAPI.lookup_placekeys"><a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI.lookup_placekeys">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_placekeys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+
+<div class="viewcode-block" id="PlacekeyAPI.lookup_placekeys">
+<a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI.lookup_placekeys">[docs]</a>
+    <span class="k">def</span> <span class="nf">lookup_placekeys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                          <span class="n">places</span><span class="p">,</span>
-                         <span class="n">strict_address_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                         <span class="n">strict_name_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">batch_size</span><span class="o">=</span><span class="n">MAX_BATCH_SIZE</span><span class="p">,</span>
                          <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lookup Placekeys for an iterable of places specified by place dictionaries.</span>
 <span class="sd">        This method checks that the place dictionaries are valid before querying</span>
 <span class="sd">        the API, and it will return partial results if it encounters a fatal error.</span>
@@ -198,10 +205,8 @@
 <span class="sd">        This method follows the rate limits of the Placekey API.</span>
 
 <span class="sd">        :param places: An iterable of of place dictionaries.</span>
-<span class="sd">        :param strict_address_match: Boolean for whether or not to strict match</span>
-<span class="sd">            on address fields. Defaults to `False`.</span>
-<span class="sd">        :param strict_name_match: Boolean for whether or not to strict match</span>
-<span class="sd">            on `location_name`. Defaults to `False`.</span>
+<span class="sd">        :param fields: A list of requested parameters other than placekey. For example: address_placekey, building_placekey</span>
+<span class="sd">            Defaults to None</span>
 <span class="sd">        :param batch_size: Integer for the number of places to lookup in a single batch.</span>
 <span class="sd">            Defaults to 100, and cannot exceeded 100.</span>
 <span class="sd">        :param verbose: Boolean for whether or not to log additional information.</span>
@@ -237,12 +242,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_batch</span><span class="p">(</span>
                     <span class="n">places</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">max_batch_idx</span><span class="p">],</span>
-                    <span class="n">strict_address_match</span><span class="o">=</span><span class="n">strict_address_match</span><span class="p">,</span>
-                    <span class="n">strict_name_match</span><span class="o">=</span><span class="n">strict_name_match</span>
+                    <span class="n">fields</span><span class="o">=</span><span class="n">fields</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="n">RateLimitException</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s1">&#39;Fatal error encountered. Returning processed items.&#39;</span><span class="p">)</span>
+                    <span class="s1">&#39;Fatal error encountered. Returning processed items at size </span><span class="si">%s</span><span class="s1"> of </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">places</span><span class="p">))</span>
                 <span class="k">break</span>
 
             <span class="c1"># Catch case where all queries in batch having an error,</span>
@@ -251,7 +255,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="s1">&#39;All queries in batch (</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">) had errors&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">max_batch_idx</span><span class="p">)</span>
 
-                <span class="n">res</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;query_id&#39;</span><span class="p">:</span> <span class="n">query_id</span><span class="p">,</span>  <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]}</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;query_id&#39;</span><span class="p">:</span> <span class="n">query_id</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]}</span>
                        <span class="k">for</span> <span class="n">query_id</span> <span class="ow">in</span> <span class="n">batch_query_ids</span><span class="p">]</span>
 
             <span class="c1"># Catch other server-side errors</span>
@@ -271,19 +275,19 @@
 
         <span class="k">return</span> <span class="n">result_list</span></div>
 
-<div class="viewcode-block" id="PlacekeyAPI.lookup_batch"><a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI.lookup_batch">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">places</span><span class="p">,</span>
-                     <span class="n">strict_address_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                     <span class="n">strict_name_match</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PlacekeyAPI.lookup_batch">
+<a class="viewcode-back" href="../../placekey.html#placekey.api.PlacekeyAPI.lookup_batch">[docs]</a>
+    <span class="k">def</span> <span class="nf">lookup_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">places</span><span class="p">,</span>
+                     <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lookup Placekeys for a single batch of places specified by place dictionaries.</span>
 <span class="sd">        The batch size can be at most 100 places. This method respects the rate limits</span>
 <span class="sd">        of the Placekey API.</span>
 
 <span class="sd">        :param places: An iterable of of place dictionaries.</span>
-<span class="sd">        :param strict_address_match: Boolean for whether or not to strict match</span>
-<span class="sd">            on address fields. Defaults to `False`.</span>
-<span class="sd">        :param strict_name_match: Boolean for whether or not to strict match</span>
-<span class="sd">            on `location_name`. Defaults to `False`.</span>
+<span class="sd">        :param fields: A list of requested parameters other than placekey. For example: address_placekey, building_placekey</span>
+<span class="sd">            Defaults to None</span>
 
 <span class="sd">        :return: A list of Placekey API responses for each place (list(dict))</span>
 
@@ -291,30 +295,28 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">places</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_BATCH_SIZE</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> places submitted. The number of places in a batch can be at most </span><span class="si">{}</span><span class="s1">&#39;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">places</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_BATCH_SIZE</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">places</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_BATCH_SIZE</span><span class="p">)</span>
             <span class="p">)</span>
 
         <span class="n">batch_payload</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;queries&quot;</span><span class="p">:</span> <span class="n">places</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="n">strict_address_match</span><span class="p">:</span>
-            <span class="n">batch_payload</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;strict_address_match&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">strict_name_match</span><span class="p">:</span>
-            <span class="n">batch_payload</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;strict_name_match&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">batch_payload</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">}</span>
 
-        <span class="c1"># Make request, and retry if there is a server-side rate limit error</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bulk_request</span><span class="p">(</span><span class="n">batch_payload</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">429</span><span class="p">:</span>
-                <span class="k">break</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bulk_request</span><span class="p">(</span><span class="n">batch_payload</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">_validate_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_dict</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">query_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">QUERY_PARAMETERS</span><span class="p">)</span>
+        <span class="n">query_dict_keys</span> <span class="o">=</span> <span class="n">query_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">top_level_check</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">query_dict_keys</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">QUERY_PARAMETERS</span><span class="p">)</span>
+        <span class="n">place_metadata_check</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">query_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PLACE_METADATA_CONSTANT</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PLACE_METADATA_PARAMETERS</span><span class="p">)</span> <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PLACE_METADATA_CONSTANT</span> <span class="ow">in</span> <span class="n">query_dict_keys</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">top_level_check</span> <span class="ow">and</span> <span class="n">place_metadata_check</span>
 
     <span class="k">def</span> <span class="nf">_get_request_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">calls</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">max_tries</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a rate limited function for making requests.</span>
 
 <span class="sd">        :param url: request URL</span>
@@ -322,15 +324,23 @@
 <span class="sd">        :param  period: length of rate limiting time period in seconds</span>
 <span class="sd">        :param max_tries: the maximum number of retries before giving up</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="nd">@on_exception</span><span class="p">(</span><span class="n">fibo</span><span class="p">,</span> <span class="n">RateLimitException</span><span class="p">,</span> <span class="n">max_tries</span><span class="o">=</span><span class="n">max_tries</span><span class="p">)</span>
         <span class="nd">@limits</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="n">calls</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">make_request</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
                 <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
             <span class="p">)</span>
 
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">RateLimitException</span><span class="p">(</span><span class="s2">&quot;Rate limit exceeded&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Assumption: A code other than 429 is handled by calling function</span>
+            <span class="k">return</span> <span class="n">response</span>
+
         <span class="k">return</span> <span class="n">make_request</span></div>
+
 </pre></div>
 
             <div class="clearer"></div>
@@ -343,12 +353,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -362,14 +372,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.17 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">placekey.api</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020, SafeGraph Inc..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    &#169; Copyright 2020, SafeGraph Inc..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>
