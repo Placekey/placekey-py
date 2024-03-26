@@ -5,16 +5,122 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Submodules &#8212; placekey 0.0.17 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=601dbdee" />
+    <title>Submodules &#8212; placekey 0.0.17 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/pydoctheme.css?v=a35cb577" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="_static/pygments_dark.css?v=b20cc3f5" />
+    
     <script src="_static/documentation_options.js?v=63b572e7"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Placekey" href="modules.html" /> 
-  </head><body>
+    <link rel="prev" title="Placekey" href="modules.html" /><link rel="stylesheet" href="_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="_static/py.svg" />
+            <script type="text/javascript" src="_static/copybutton.js"></script>
+            <script type="text/javascript" src="_static/menu.js"></script>
+            <script type="text/javascript" src="_static/search-focus.js"></script>
+            <script type="text/javascript" src="_static/themetoggle.js"></script> 
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu" />
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="_static/py.svg" alt="Python logo"/>
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" />
+                <input type="submit" value="Go"/>
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+            
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Submodules</a><ul>
+<li><a class="reference internal" href="#module-placekey.api">placekey.api</a><ul>
+<li><a class="reference internal" href="#placekey.api.PlacekeyAPI"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI</span></code></a><ul>
+<li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_placekey"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekey()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_placekeys"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekeys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-placekey.placekey">placekey.placekey</a><ul>
+<li><a class="reference internal" href="#placekey.placekey.geo_to_placekey"><code class="docutils literal notranslate"><span class="pre">geo_to_placekey()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.geojson_to_placekeys"><code class="docutils literal notranslate"><span class="pre">geojson_to_placekeys()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.get_neighboring_placekeys"><code class="docutils literal notranslate"><span class="pre">get_neighboring_placekeys()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.get_prefix_distance_dict"><code class="docutils literal notranslate"><span class="pre">get_prefix_distance_dict()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.h3_int_to_placekey"><code class="docutils literal notranslate"><span class="pre">h3_int_to_placekey()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.h3_to_placekey"><code class="docutils literal notranslate"><span class="pre">h3_to_placekey()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_distance"><code class="docutils literal notranslate"><span class="pre">placekey_distance()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_format_is_valid"><code class="docutils literal notranslate"><span class="pre">placekey_format_is_valid()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_to_geo"><code class="docutils literal notranslate"><span class="pre">placekey_to_geo()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_to_geojson"><code class="docutils literal notranslate"><span class="pre">placekey_to_geojson()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_to_h3"><code class="docutils literal notranslate"><span class="pre">placekey_to_h3()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_to_h3_int"><code class="docutils literal notranslate"><span class="pre">placekey_to_h3_int()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_to_hex_boundary"><code class="docutils literal notranslate"><span class="pre">placekey_to_hex_boundary()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_to_polygon"><code class="docutils literal notranslate"><span class="pre">placekey_to_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.placekey_to_wkt"><code class="docutils literal notranslate"><span class="pre">placekey_to_wkt()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.polygon_to_placekeys"><code class="docutils literal notranslate"><span class="pre">polygon_to_placekeys()</span></code></a></li>
+<li><a class="reference internal" href="#placekey.placekey.wkt_to_placekeys"><code class="docutils literal notranslate"><span class="pre">wkt_to_placekeys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="modules.html"
+                          title="previous chapter">Placekey</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/placekey.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+  
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -27,11 +133,42 @@
         <li class="right" >
           <a href="modules.html" title="Placekey"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.17 documentation</a> &#187;</li>
+          <li><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"/></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+              
+              <a href="index.html">placekey 0.0.17 documentation</a> &#187;
+              
+          </li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Placekey</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Submodules</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Submodules</a></li>
+                <li class="right">
+                    
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box" />
+          <input type="submit" value="Go" />
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+            
       </ul>
-    </div>  
+    </div>    
 
     <div class="document">
       <div class="documentwrapper">
@@ -77,26 +214,6 @@ to 20.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="placekey.api.PlacekeyAPI.lookup_batch">
-<span class="sig-name descname"><span class="pre">lookup_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">places</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_batch" title="Link to this definition">¶</a></dt>
-<dd><p>Lookup Placekeys for a single batch of places specified by place dictionaries.
-The batch size can be at most 100 places. This method respects the rate limits
-of the Placekey API.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>places</strong> – An iterable of of place dictionaries.</p></li>
-<li><p><strong>fields</strong> – A list of requested parameters other than placekey. For example: address_placekey, building_placekey
-Defaults to None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of Placekey API responses for each place (list(dict))</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="placekey.api.PlacekeyAPI.lookup_placekey">
 <span class="sig-name descname"><span class="pre">lookup_placekey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_placekey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_placekey" title="Link to this definition">¶</a></dt>
@@ -471,7 +588,6 @@ counter-clockwise orientation. If False (default) assumes tuples will be
 <li><a class="reference internal" href="#">Submodules</a><ul>
 <li><a class="reference internal" href="#module-placekey.api">placekey.api</a><ul>
 <li><a class="reference internal" href="#placekey.api.PlacekeyAPI"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI</span></code></a><ul>
-<li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_batch"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_batch()</span></code></a></li>
 <li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_placekey"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekey()</span></code></a></li>
 <li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_placekeys"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekeys()</span></code></a></li>
 </ul>
@@ -528,7 +644,7 @@ counter-clockwise orientation. If False (default) assumes tuples will be
         </div>
       </div>
       <div class="clearer"></div>
-    </div>
+    </div>  
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -541,14 +657,64 @@ counter-clockwise orientation. If False (default) assumes tuples will be
         <li class="right" >
           <a href="modules.html" title="Placekey"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">placekey 0.0.17 documentation</a> &#187;</li>
+          <li><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"/></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+              
+              <a href="index.html">placekey 0.0.17 documentation</a> &#187;
+              
+          </li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Placekey</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Submodules</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Submodules</a></li>
+                <li class="right">
+                    
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box" />
+          <input type="submit" value="Go" />
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+            
       </ul>
+    </div>  
+    <div class="footer">
+    &copy; Copyright 2020, SafeGraph Inc..
+    <br />
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br />
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br />
+    
+    
+    <br />
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br />
+    <br />
+
+    Last updated on None.
+    
+    <br />
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
-    <div class="footer" role="contentinfo">
-    &#169; Copyright 2020, SafeGraph Inc..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
-    </div>
+
   </body>
 </html>
