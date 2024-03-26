@@ -78,26 +78,6 @@ to 20.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="placekey.api.PlacekeyAPI.lookup_batch">
-<span class="sig-name descname"><span class="pre">lookup_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">places</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_batch" title="Link to this definition">¶</a></dt>
-<dd><p>Lookup Placekeys for a single batch of places specified by place dictionaries.
-The batch size can be at most 100 places. This method respects the rate limits
-of the Placekey API.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>places</strong> – An iterable of of place dictionaries.</p></li>
-<li><p><strong>fields</strong> – A list of requested parameters other than placekey. For example: address_placekey, building_placekey
-Defaults to None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of Placekey API responses for each place (list(dict))</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="placekey.api.PlacekeyAPI.lookup_placekey">
 <span class="sig-name descname"><span class="pre">lookup_placekey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/placekey/api.html#PlacekeyAPI.lookup_placekey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#placekey.api.PlacekeyAPI.lookup_placekey" title="Link to this definition">¶</a></dt>
 <dd><p>Lookup the Placekey for a single place.</p>
@@ -471,7 +451,6 @@ counter-clockwise orientation. If False (default) assumes tuples will be
 <li><a class="reference internal" href="#">Submodules</a><ul>
 <li><a class="reference internal" href="#module-placekey.api">placekey.api</a><ul>
 <li><a class="reference internal" href="#placekey.api.PlacekeyAPI"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI</span></code></a><ul>
-<li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_batch"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_batch()</span></code></a></li>
 <li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_placekey"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekey()</span></code></a></li>
 <li><a class="reference internal" href="#placekey.api.PlacekeyAPI.lookup_placekeys"><code class="docutils literal notranslate"><span class="pre">PlacekeyAPI.lookup_placekeys()</span></code></a></li>
 </ul>

@@ -197,7 +197,7 @@ class PlacekeyAPI:
             batch_query_ids = [p['query_id'] for p in places[i:max_batch_idx]]
 
             try:
-                res = self.lookup_batch(
+                res = self._lookup_batch(
                     places[i:max_batch_idx],
                     fields=fields
                 )
@@ -232,8 +232,8 @@ class PlacekeyAPI:
 
         return result_list
 
-    def lookup_batch(self, places,
-                     fields=None):
+    def _lookup_batch(self, places,
+                      fields=None):
         """
         Lookup Placekeys for a single batch of places specified by place dictionaries.
         The batch size can be at most 100 places. This method respects the rate limits
