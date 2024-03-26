@@ -1,18 +1,15 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>placekey.placekey &#8212; placekey 0.0.1 documentation</title>
-    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+    <title>placekey.placekey &#8212; placekey 0.0.17 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=601dbdee" />
+    <script src="../../_static/documentation_options.js?v=63b572e7"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
@@ -25,7 +22,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.17 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">placekey.placekey</a></li> 
       </ul>
@@ -85,11 +82,11 @@
 <span class="n">TUPLE_REGEX</span> <span class="o">=</span> <span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="n">ALPHABET</span> <span class="o">+</span> <span class="n">REPLACEMENT_CHARS</span> <span class="o">+</span> <span class="s1">&#39;]</span><span class="si">{3}</span><span class="s1">&#39;</span>
 <span class="n">WHERE_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
     <span class="s1">&#39;^&#39;</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">FIRST_TUPLE_REGEX</span><span class="p">,</span> <span class="n">TUPLE_REGEX</span><span class="p">,</span> <span class="n">TUPLE_REGEX</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;$&#39;</span><span class="p">)</span>
-<span class="n">WHAT_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^[&#39;</span> <span class="o">+</span> <span class="n">ALPHABET</span> <span class="o">+</span> <span class="s1">&#39;]</span><span class="si">{3}</span><span class="s1">(-[&#39;</span> <span class="o">+</span> <span class="n">ALPHABET</span> <span class="o">+</span> <span class="s1">&#39;]</span><span class="si">{3}</span><span class="s1">)?$&#39;</span><span class="p">)</span>
-
+<span class="n">WHAT_REGEX_V1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^[&#39;</span> <span class="o">+</span> <span class="n">ALPHABET</span> <span class="o">+</span> <span class="s1">&#39;]{3,}(-[&#39;</span> <span class="o">+</span> <span class="n">ALPHABET</span> <span class="o">+</span> <span class="s1">&#39;]{3,})?$&#39;</span><span class="p">)</span>
+<span class="n">WHAT_REGEX_V2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^[01][abcdefghijklmnopqrstuvwxyz234567]</span><span class="si">{9}</span><span class="s1">$&#39;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">_get_header_int</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :return: An integer corresponding to the header of an H3 integer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">header_int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -102,8 +99,10 @@
 <span class="n">HEADER_INT</span> <span class="o">=</span> <span class="n">_get_header_int</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="geo_to_placekey"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.geo_to_placekey">[docs]</a><span class="k">def</span> <span class="nf">geo_to_placekey</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">long</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="geo_to_placekey">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.geo_to_placekey">[docs]</a>
+<span class="k">def</span> <span class="nf">geo_to_placekey</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">long</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert latitude and longitude into a Placekey.</span>
 
 <span class="sd">    :param lat: Latitude (float)</span>
@@ -114,8 +113,11 @@
     <span class="k">return</span> <span class="n">_encode_h3_int</span><span class="p">(</span><span class="n">h3_int</span><span class="o">.</span><span class="n">geo_to_h3</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">long</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">RESOLUTION</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="placekey_to_geo"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_geo">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_geo</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_to_geo">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_geo">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_to_geo</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a Placekey into a (latitude, longitude) tuple.</span>
 
 <span class="sd">    :param placekey: Placekey (string)</span>
@@ -125,8 +127,11 @@
     <span class="k">return</span> <span class="n">h3</span><span class="o">.</span><span class="n">h3_to_geo</span><span class="p">(</span><span class="n">placekey_to_h3</span><span class="p">(</span><span class="n">placekey</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="placekey_to_h3"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_h3">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_h3</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_to_h3">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_h3">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_to_h3</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a Placekey string into an H3 string.</span>
 
 <span class="sd">    :param placekey: Placekey (string)</span>
@@ -137,8 +142,11 @@
     <span class="k">return</span> <span class="n">h3</span><span class="o">.</span><span class="n">h3_to_string</span><span class="p">(</span><span class="n">_decode_to_h3_int</span><span class="p">(</span><span class="n">where</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="h3_to_placekey"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.h3_to_placekey">[docs]</a><span class="k">def</span> <span class="nf">h3_to_placekey</span><span class="p">(</span><span class="n">h3_string</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="h3_to_placekey">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.h3_to_placekey">[docs]</a>
+<span class="k">def</span> <span class="nf">h3_to_placekey</span><span class="p">(</span><span class="n">h3_string</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an H3 hexadecimal string into a Placekey string.</span>
 
 <span class="sd">    :param h3_string: H3 (string)</span>
@@ -148,8 +156,11 @@
     <span class="k">return</span> <span class="n">_encode_h3_int</span><span class="p">(</span><span class="n">h3</span><span class="o">.</span><span class="n">string_to_h3</span><span class="p">(</span><span class="n">h3_string</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_prefix_distance_dict"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.get_prefix_distance_dict">[docs]</a><span class="k">def</span> <span class="nf">get_prefix_distance_dict</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_prefix_distance_dict">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.get_prefix_distance_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">get_prefix_distance_dict</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a dictionary mapping the length of a shared Placekey prefix to the</span>
 <span class="sd">    maximal distance in meters between two Placekeys sharing a prefix of that length.</span>
 
@@ -170,8 +181,11 @@
     <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="h3_int_to_placekey"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.h3_int_to_placekey">[docs]</a><span class="k">def</span> <span class="nf">h3_int_to_placekey</span><span class="p">(</span><span class="n">h3_integer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="h3_int_to_placekey">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.h3_int_to_placekey">[docs]</a>
+<span class="k">def</span> <span class="nf">h3_int_to_placekey</span><span class="p">(</span><span class="n">h3_integer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an H3 integer into a Placekey.</span>
 
 <span class="sd">    :param h3_integer: H3 index (int)</span>
@@ -181,8 +195,11 @@
     <span class="k">return</span> <span class="n">_encode_h3_int</span><span class="p">(</span><span class="n">h3_integer</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="placekey_to_h3_int"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_h3_int">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_h3_int</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_to_h3_int">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_h3_int">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_to_h3_int</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a Placekey to an H3 integer.</span>
 
 <span class="sd">    :param placekey: Placekey (string)</span>
@@ -193,8 +210,11 @@
     <span class="k">return</span> <span class="n">_decode_to_h3_int</span><span class="p">(</span><span class="n">where</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_neighboring_placekeys"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.get_neighboring_placekeys">[docs]</a><span class="k">def</span> <span class="nf">get_neighboring_placekeys</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_neighboring_placekeys">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.get_neighboring_placekeys">[docs]</a>
+<span class="k">def</span> <span class="nf">get_neighboring_placekeys</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the unordered set of Placekeys whose grid distance is `&lt;= dist` from the given</span>
 <span class="sd">    Placekey. In this context, grid distance refers to the number of H3 cells between</span>
 <span class="sd">    two H3 cells, so that neighboring cells have distance 1, neighbors of neighbors have</span>
@@ -210,8 +230,11 @@
     <span class="k">return</span> <span class="p">{</span><span class="n">h3_int_to_placekey</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">neighboring_h3</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="placekey_to_hex_boundary"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_hex_boundary">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_hex_boundary</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_to_hex_boundary">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_hex_boundary">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_to_hex_boundary</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a Placekey, return the coordinates of the boundary of the hexagon.</span>
 
 <span class="sd">    :param placekey: Placekey (string)</span>
@@ -227,8 +250,11 @@
     <span class="k">return</span> <span class="n">h3_int</span><span class="o">.</span><span class="n">h3_to_geo_boundary</span><span class="p">(</span><span class="n">h3_integer</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="n">geo_json</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="placekey_to_polygon"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_polygon">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_polygon</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_to_polygon">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_polygon">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_to_polygon</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the boundary shapely Polygon for a Placekey.</span>
 
 <span class="sd">    :param place_key: Placekey (string)</span>
@@ -245,8 +271,11 @@
         <span class="n">sign</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="placekey_to_wkt"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_wkt">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_wkt</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_to_wkt">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_wkt">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_to_wkt</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a Placekey into the WKT (Well-Known Text) string for the</span>
 <span class="sd">    corresponding hexagon. Coordinates are (longitude, latitude).</span>
 
@@ -261,8 +290,11 @@
     <span class="k">return</span> <span class="n">placekey_to_polygon</span><span class="p">(</span><span class="n">placekey</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="n">geo_json</span><span class="p">)</span><span class="o">.</span><span class="n">wkt</span></div>
 
 
-<div class="viewcode-block" id="placekey_to_geojson"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_geojson">[docs]</a><span class="k">def</span> <span class="nf">placekey_to_geojson</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_to_geojson">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_to_geojson">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_to_geojson</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a Placekey into a GeoJSON dicitonary. Note that GeoJSON uses</span>
 <span class="sd">    (longitude, latitude) points, and the first and last points are identical.</span>
 
@@ -273,8 +305,11 @@
 
 
 
-<div class="viewcode-block" id="polygon_to_placekeys"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.polygon_to_placekeys">[docs]</a><span class="k">def</span> <span class="nf">polygon_to_placekeys</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span> <span class="n">include_touching</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="polygon_to_placekeys">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.polygon_to_placekeys">[docs]</a>
+<span class="k">def</span> <span class="nf">polygon_to_placekeys</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span> <span class="n">include_touching</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a shapely Polygon, return Placekeys contained in</span>
 <span class="sd">    or intersecting the boundary of the polygon.</span>
 
@@ -318,8 +353,11 @@
     <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="wkt_to_placekeys"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.wkt_to_placekeys">[docs]</a><span class="k">def</span> <span class="nf">wkt_to_placekeys</span><span class="p">(</span><span class="n">wkt</span><span class="p">,</span> <span class="n">include_touching</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="wkt_to_placekeys">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.wkt_to_placekeys">[docs]</a>
+<span class="k">def</span> <span class="nf">wkt_to_placekeys</span><span class="p">(</span><span class="n">wkt</span><span class="p">,</span> <span class="n">include_touching</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a WKT description of a polygon, return Placekeys contained in</span>
 <span class="sd">    or intersecting the boundary of the polygon.</span>
 
@@ -339,8 +377,11 @@
         <span class="n">wkt_loads</span><span class="p">(</span><span class="n">wkt</span><span class="p">),</span> <span class="n">include_touching</span><span class="o">=</span><span class="n">include_touching</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="n">geo_json</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="geojson_to_placekeys"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.geojson_to_placekeys">[docs]</a><span class="k">def</span> <span class="nf">geojson_to_placekeys</span><span class="p">(</span><span class="n">geojson</span><span class="p">,</span> <span class="n">include_touching</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="geojson_to_placekeys">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.geojson_to_placekeys">[docs]</a>
+<span class="k">def</span> <span class="nf">geojson_to_placekeys</span><span class="p">(</span><span class="n">geojson</span><span class="p">,</span> <span class="n">include_touching</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a GeoJSON description of a polygon, return Placekeys contained in</span>
 <span class="sd">    or intersecting the boundary of the polygon.</span>
 
@@ -365,8 +406,11 @@
         <span class="n">poly</span><span class="p">,</span> <span class="n">include_touching</span><span class="o">=</span><span class="n">include_touching</span><span class="p">,</span> <span class="n">geo_json</span><span class="o">=</span><span class="n">geo_json</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="placekey_format_is_valid"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_format_is_valid">[docs]</a><span class="k">def</span> <span class="nf">placekey_format_is_valid</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_format_is_valid">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_format_is_valid">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_format_is_valid</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Boolean for whether or not the format of a Placekey is valid, including</span>
 <span class="sd">    checks for valid encoding of location.</span>
 
@@ -374,16 +418,22 @@
 <span class="sd">    :return: True if the Placekey is valid, False otherwise</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">what</span><span class="p">,</span> <span class="n">where</span> <span class="o">=</span> <span class="n">_parse_placekey</span><span class="p">(</span><span class="n">placekey</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">what</span><span class="p">,</span> <span class="n">where</span> <span class="o">=</span> <span class="n">_parse_placekey</span><span class="p">(</span><span class="n">placekey</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="n">what</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_where_part_is_valid</span><span class="p">(</span><span class="n">where</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">WHAT_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">what</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">_where_part_is_valid</span><span class="p">(</span><span class="n">where</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">WHAT_REGEX_V1</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">what</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">WHAT_REGEX_V2</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">what</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_where_part_is_valid</span><span class="p">(</span><span class="n">where</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="placekey_distance"><a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_distance">[docs]</a><span class="k">def</span> <span class="nf">placekey_distance</span><span class="p">(</span><span class="n">placekey_1</span><span class="p">,</span> <span class="n">placekey_2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="placekey_distance">
+<a class="viewcode-back" href="../../placekey.html#placekey.placekey.placekey_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">placekey_distance</span><span class="p">(</span><span class="n">placekey_1</span><span class="p">,</span> <span class="n">placekey_2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the distance in meters between the centers of two Placekeys.</span>
 
 <span class="sd">    :param placekey_1: Placekey (string)</span>
@@ -396,8 +446,9 @@
     <span class="k">return</span> <span class="n">_geo_distance</span><span class="p">(</span><span class="n">geo_1</span><span class="p">,</span> <span class="n">geo_2</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_parse_placekey</span><span class="p">(</span><span class="n">placekey</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split a Placekey in to what and where parts.</span>
 
 <span class="sd">    :param placekey: Placekey (string)</span>
@@ -413,7 +464,7 @@
 
 
 <span class="k">def</span> <span class="nf">_where_part_is_valid</span><span class="p">(</span><span class="n">where</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Boolean for whether or not the where part of a Placekey is valid.</span>
 
 <span class="sd">    :param placekey: Placekey (string)</span>
@@ -482,7 +533,7 @@
 
 
 <span class="k">def</span> <span class="nf">_shorten_h3_integer</span><span class="p">(</span><span class="n">h3_integer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shorten an H3 integer to only include location data up to the base resolution</span>
 <span class="sd">    :param h3_integer: H3 integer (int)</span>
 <span class="sd">    :return: shortened H3 integer</span>
@@ -526,12 +577,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -545,14 +596,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">placekey 0.0.17 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">placekey.placekey</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020, SafeGraph Inc..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    &#169; Copyright 2020, SafeGraph Inc..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>
