@@ -105,11 +105,13 @@ The `PlacekeyAPI.lookup_placekey` method can be used to lookup the Placekey for 
 >>>   "postal_code": "94131",
 >>>   "iso_country_code": "US"
 >>> }
->>> pk_api.lookup_placekey(**place, fields=["building_placekey","address_placekey"])
+>>> pk_api.lookup_placekey(**place, fields=["building_placekey","address_placekey","confidence_score","gers"])
 {'query_id': '0',
  'placekey': '227-223@5vg-82n-pgk',
  'address_placekey': '227@5vg-82n-pgk',
- 'building_placekey': '227@5vg-82n-pgk'}
+ 'building_placekey': '227@5vg-82n-pgk',
+ 'confidence_score': 'HIGH',
+ 'gers': None}
 ```
 
 The `PlacekeyAPI.lookup_placekeys` method can be used to lookup Placekeys for multiple places.
@@ -137,10 +139,23 @@ The `PlacekeyAPI.lookup_placekeys` method can be used to lookup Placekeys for mu
 >>>     "longitude": -122.44283
 >>>   }
 >>> ]
->>> pk_api.lookup_placekeys(places)
-[{'query_id': 'place_0', 'placekey': '226@5vg-7gq-5mk'},
- {'query_id': 'thisqueryidaloneiscustom', 'placekey': '227-222@5vg-82n-pgk'},
- {'query_id': 'place_2', 'placekey': '@5vg-82n-kzz'}]
+>>> pk_api.lookup_placekeys(places, fields=["building_placekey","address_placekey","confidence_score","gers"])
+[{'query_id': 'place_0',
+  'placekey': '0rsdbudq45@5vg-7gq-5mk',
+  'address_placekey': '0rsdbudq45@5vg-7gq-5mk',
+  'building_placekey': '22g@5vg-7gq-5mk',
+  'confidence_score': 'HIGH',
+  'gers': None},
+ {'query_id': 'thisqueryidaloneiscustom',
+  'placekey': '227-223@5vg-82n-pgk',
+  'address_placekey': '227@5vg-82n-pgk',
+  'building_placekey': '227@5vg-82n-pgk',
+  'confidence_score': 'HIGH',
+  'gers': None},
+ {'query_id': 'place_2',
+  'placekey': '@5vg-82n-kzz',
+  'confidence_score': 'HIGH',
+  'gers': None}]
 ```
 
 Full details on how to query the API and how to get an API key can be found [here](https://docs.placekey.io/).
