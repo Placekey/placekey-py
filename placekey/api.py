@@ -55,7 +55,7 @@ class PlacekeyAPI:
     REQUEST_WINDOW = 60
 
     BULK_URL = 'https://api.placekey.io/v1/placekeys'
-    BULK_REQUEST_LIMIT = 100
+    BULK_REQUEST_LIMIT = 10
     BULK_REQUEST_WINDOW = 60
     MAX_BATCH_SIZE = 100
 
