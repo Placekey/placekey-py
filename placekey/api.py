@@ -1,12 +1,13 @@
-import hashlib
+import itertools
 import json
 import logging
-import itertools
-from typing import List
+from json import JSONDecodeError
 
+import backoff
 import requests
-from ratelimit import limits, RateLimitException
 from backoff import on_exception, fibo
+from ratelimit import limits, RateLimitException
+
 from .__version__ import __version__
 
 console_log = logging.StreamHandler()
@@ -141,7 +142,7 @@ class PlacekeyAPI:
 
         result = self.make_request(payload)
 
-        return json.loads(result.text)
+        return self._safe_parse_json(result.text)
 
     def lookup_placekeys(self,
                          places,
@@ -205,6 +206,10 @@ class PlacekeyAPI:
                 self.logger.error(
                     'Fatal error encountered. Returning processed items at size %s of %s', i, len(places))
                 break
+            except requests.exceptions.RequestException:
+                self.logger.error(
+                    'Fatal error encountered. Returning processed items at size %s of %s', i, len(places))
+                break
 
             # Catch case where all queries in batch having an error,
             # and generate rows for individual items.
@@ -260,13 +265,33 @@ class PlacekeyAPI:
 
         result = self.make_bulk_request(batch_payload)
 
-        return json.loads(result.text)
+        return self._safe_parse_json(result.text)
 
     def _validate_query(self, query_dict):
         query_dict_keys = query_dict.keys()
         top_level_check = set(query_dict_keys).issubset(self.QUERY_PARAMETERS)
-        place_metadata_check = set(query_dict.get(self.PLACE_METADATA_CONSTANT).keys()).issubset(self.PLACE_METADATA_PARAMETERS) if(self.PLACE_METADATA_CONSTANT in query_dict_keys) else True
+        place_metadata_check = set(query_dict.get(self.PLACE_METADATA_CONSTANT).keys()).issubset(
+            self.PLACE_METADATA_PARAMETERS) if (self.PLACE_METADATA_CONSTANT in query_dict_keys) else True
         return top_level_check and place_metadata_check
+
+    def _safe_parse_json(self, result):
+        """
+        Safely parse JSON response.
+
+        Parameters:
+            result (str): JSON string.
+
+        Returns:
+            dict: Parsed JSON dictionary or empty list if parsing fails.
+        """
+        try:
+            return json.loads(result)
+        except JSONDecodeError:
+            self.logger.error("JSONDecodeError parsing, returning empty list")
+            return []
+        except Exception as e:
+            self.logger.error(f"Error parsing: {e}, returning empty list")
+            return []
 
     def _get_request_function(self, url, calls, period, max_tries):
         """
@@ -278,18 +303,25 @@ class PlacekeyAPI:
         :param max_tries: the maximum number of retries before giving up
         """
 
-        @on_exception(fibo, RateLimitException, max_tries=max_tries)
+        @backoff.on_exception(backoff.fibo, (RateLimitException, requests.exceptions.RequestException),
+                              max_tries=max_tries)
         @limits(calls=calls, period=period)
         def make_request(data):
-            response = requests.post(
-                url, headers=self.headers,
-                data=json.dumps(data).encode('utf-8')
-            )
+            try:
+                response = requests.post(
+                    url, headers=self.headers,
+                    data=json.dumps(data).encode('utf-8')
+                )
 
-            if response.status_code == 429:
-                raise RateLimitException("Rate limit exceeded", 0)
+                if response.status_code == 429:
+                    raise RateLimitException("Rate limit exceeded", 0)
+                elif response.status_code == 503:
+                    raise requests.exceptions.RequestException("Service Unavailable")
+                elif response.status_code == 504:
+                    raise requests.exceptions.RequestException("Gateway Timeout")
 
-            # Assumption: A code other than 429 is handled by calling function
-            return response
+                return response
+            except requests.exceptions.RequestException as e:
+                raise e
 
         return make_request
