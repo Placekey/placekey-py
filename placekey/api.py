@@ -1,12 +1,12 @@
-import hashlib
+import itertools
 import json
 import logging
-import itertools
-from typing import List
+from json import JSONDecodeError
 
 import requests
-from ratelimit import limits, RateLimitException
 from backoff import on_exception, fibo
+from ratelimit import limits, RateLimitException
+
 from .__version__ import __version__
 
 console_log = logging.StreamHandler()
@@ -260,7 +260,15 @@ class PlacekeyAPI:
 
         result = self.make_bulk_request(batch_payload)
 
-        return json.loads(result.text)
+        try:
+            return json.loads(result.text)
+        except JSONDecodeError:
+            self.logger.error(f"JSONDecodeError parsing, returning empty list")
+            return []
+        except:
+            self.logger.error(f"Error parsing, returning empty list")
+            return []
+
 
     def _validate_query(self, query_dict):
         query_dict_keys = query_dict.keys()
@@ -286,10 +294,8 @@ class PlacekeyAPI:
                 data=json.dumps(data).encode('utf-8')
             )
 
-            if response.status_code == 429:
+            if response.status_code == 429 or response.status_code == 504:
                 raise RateLimitException("Rate limit exceeded", 0)
-
-            # Assumption: A code other than 429 is handled by calling function
             return response
 
         return make_request
