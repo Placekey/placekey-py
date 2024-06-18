@@ -3,6 +3,7 @@ import json
 import logging
 from json import JSONDecodeError
 
+import backoff
 import requests
 from backoff import on_exception, fibo
 from ratelimit import limits, RateLimitException
@@ -16,6 +17,12 @@ console_log.setFormatter(
 log = logging.getLogger(__name__)
 log.setLevel(logging.ERROR)
 log.handlers = [console_log]
+
+
+class GatewayTimeout(Exception):
+    def __init__(self, message, period_remaining):
+        super(GatewayTimeout, self).__init__(message)
+        self.period_remaining = period_remaining
 
 
 class PlacekeyAPI:
@@ -286,16 +293,23 @@ class PlacekeyAPI:
         :param max_tries: the maximum number of retries before giving up
         """
 
-        @on_exception(fibo, RateLimitException, max_tries=max_tries)
+        @backoff.on_exception(backoff.fibo, (RateLimitException, requests.exceptions.RequestException),
+                              max_tries=max_tries)
         @limits(calls=calls, period=period)
         def make_request(data):
-            response = requests.post(
-                url, headers=self.headers,
-                data=json.dumps(data).encode('utf-8')
-            )
+            try:
+                response = requests.post(
+                    url, headers=self.headers,
+                    data=json.dumps(data).encode('utf-8')
+                )
 
-            if response.status_code == 429 or response.status_code == 504:
-                raise RateLimitException("Rate limit exceeded", 0)
-            return response
+                if response.status_code == 429:
+                    raise RateLimitException("Rate limit exceeded", 0)
+                elif response.status_code == 504:
+                    raise requests.exceptions.RequestException("Gateway Timeout")
+
+                return response
+            except requests.exceptions.RequestException as e:
+                raise e
 
         return make_request
