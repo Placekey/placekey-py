@@ -302,11 +302,12 @@ class PlacekeyAPI:
                     url, headers=self.headers,
                     data=json.dumps(data).encode('utf-8')
                 )
-
                 if response.status_code == 429:
                     raise RateLimitException("Rate limit exceeded", 0)
                 elif response.status_code == 504:
                     raise requests.exceptions.RequestException("Gateway Timeout")
+                elif response.status_code == 503:
+                    raise requests.exceptions.RequestException("Service Unavailable")
 
                 return response
             except requests.exceptions.RequestException as e:
