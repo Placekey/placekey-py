@@ -48,63 +48,7 @@ WHERE_REGEX = re.compile(
     '^' + '-'.join([FIRST_TUPLE_REGEX, TUPLE_REGEX, TUPLE_REGEX]) + '$')
 WHAT_REGEX_V1 = re.compile('^[' + ALPHABET + ']{3,}(-[' + ALPHABET + ']{3,})?$')
 WHAT_REGEX_V2 = re.compile('^[01][abcdefghijklmnopqrstuvwxyz234567]{9}$')
-DATASET_LOCATIONS = {
-  "boston-food-establishment-inspections": "s3a://safegraph-public/placekey-free-datasets/boston-food-establishment-inspections/boston-food-establishment-inspections.csv",
-  "boston-property-assessment-data": "s3a://safegraph-public/placekey-free-datasets/boston-property-assessment-data/boston-property-assessment-data.csv",
-  "boston-public-works-violations": "s3a://safegraph-public/placekey-free-datasets/boston-public-works-violations/boston-public-works-violations.csv",
-  "chicago-building-permits": "s3a://safegraph-public/placekey-free-datasets/chicago-building-permits/chicago-building-permits.csv",
-  "chicago-scofflaw-law-violation-data": "s3a://safegraph-public/placekey-free-datasets/chicago-scofflaw-law-violation-data/chicago-scofflaw-law-violation-data.csv",
-  "chicago-vacant-and-abandoned-buildings": "s3a://safegraph-public/placekey-free-datasets/chicago-vacant-and-abandoned-buildings/chicago-vacant-and-abandoned-buildings.csv",
-  "chipotle-locations": "s3a://safegraph-public/placekey-free-datasets/chipotle-locations/chipotle-locations.csv",
-  "federally-qualified-health-centers-(fqhc)-provider-locations": "s3a://safegraph-public/placekey-free-datasets/federally-qualified-health-centers-(fqhc)-provider-locations/federally-qualified-health-centers-(fqhc)-provider-locations.csv",
-  "foursquare-open-source-places": "s3a://safegraph-public/placekey-free-datasets/foursquare-open-source-places/foursquare-open-source-places.csv",
-  "home-health-agency-medicare-enrollments": "s3a://safegraph-public/placekey-free-datasets/home-health-agency-medicare-enrollments/home-health-agency-medicare-enrollments.csv",
-  "home-infusion-therapy-provider-medicare-enrollments": "s3a://safegraph-public/placekey-free-datasets/home-infusion-therapy-provider-medicare-enrollments/home-infusion-therapy-provider-medicare-enrollments.csv",
-  "hospice-medicare-enrollments": "s3a://safegraph-public/placekey-free-datasets/hospice-medicare-enrollments/hospice-medicare-enrollments.csv",
-  "hospital-medicare-enrollments": "s3a://safegraph-public/placekey-free-datasets/hospital-medicare-enrollments/hospital-medicare-enrollments.csv",
-  "la-crime-2020-24": "s3a://safegraph-public/placekey-free-datasets/la-crime-2020-24/la-crime-2020-24.csv",
-  "national-address-database": "s3a://safegraph-public/placekey-free-datasets/national-address-database/national-address-database.csv",
-  "national-downloadable-files-from-the-doctors-and-clinicians-data-section": "s3a://safegraph-public/placekey-free-datasets/national-downloadable-files-from-the-doctors-and-clinicians-data-section/national-downloadable-files-from-the-doctors-and-clinicians-data-section.csv",
-  "national-provider-identifier-(npi)": "s3a://safegraph-public/placekey-free-datasets/national-provider-identifier-(npi)/national-provider-identifier-(npi).csv",
-  "national-provider-identifier": "s3a://safegraph-public/placekey-free-datasets/national-provider-identifier/national-provider-identifier.csv",
-  "nyc-acris-property-locations": "s3a://safegraph-public/placekey-free-datasets/nyc-acris-property-locations/nyc-acris-property-locations.csv",
-  "nyc-tax-liens-sale": "s3a://safegraph-public/placekey-free-datasets/nyc-tax-liens-sale/nyc-tax-liens-sale.csv",
-  "overture": "s3a://safegraph-public/placekey-free-datasets/overture/overture.csv",
-  "paycheck-protection-program-lender-locations": "s3a://safegraph-public/placekey-free-datasets/paycheck-protection-program-lender-locations/paycheck-protection-program-lender-locations.csv",
-  "paycheck-protection-program-loan-data": "s3a://safegraph-public/placekey-free-datasets/paycheck-protection-program-loan-data/paycheck-protection-program-loan-data.csv",
-  "philadelphia-affordable-housing-production": "s3a://safegraph-public/placekey-free-datasets/philadelphia-affordable-housing-production/philadelphia-affordable-housing-production.csv",
-  "philadelphia-certified-for-rental-suitability": "s3a://safegraph-public/placekey-free-datasets/philadelphia-certified-for-rental-suitability/philadelphia-certified-for-rental-suitability.csv",
-  "philadelphia-demolitions": "s3a://safegraph-public/placekey-free-datasets/philadelphia-demolitions/philadelphia-demolitions.csv",
-  "preferred-communications-skinny-file": "s3a://safegraph-public/placekey-free-datasets/preferred-communications-skinny-file/preferred-communications-skinny-file.csv",
-  "regrid-skinny-file": "s3a://safegraph-public/placekey-free-datasets/regrid-skinny-file/regrid-skinny-file.csv",
-  "resimplifi-skinny-file": "s3a://safegraph-public/placekey-free-datasets/resimplifi-skinny-file/resimplifi-skinny-file.csv",
-  "rural-health-clinic-medicare-enrollments": "s3a://safegraph-public/placekey-free-datasets/rural-health-clinic-medicare-enrollments/rural-health-clinic-medicare-enrollments.csv",
-  "skilled-nursing-facility-medicare-enrollments": "s3a://safegraph-public/placekey-free-datasets/skilled-nursing-facility-medicare-enrollments/skilled-nursing-facility-medicare-enrollments.csv",
-  "starbucks-and-dunkin": "s3a://safegraph-public/placekey-free-datasets/starbucks-and-dunkin/starbucks-and-dunkin.csv",
-  "supplemental-nutrition-assistance-program-locations": "s3a://safegraph-public/placekey-free-datasets/supplemental-nutrition-assistance-program-locations/supplemental-nutrition-assistance-program-locations.csv",
-  "throtle-skinny-file": "s3a://safegraph-public/placekey-free-datasets/throtle-skinny-file/throtle-skinny-file.csv",
-  "verisk-skinny-file": "s3a://safegraph-public/placekey-free-datasets/verisk-skinny-file/verisk-skinny-file.csv",
-  "windfall-skinny-file": "s3a://safegraph-public/placekey-free-datasets/windfall-skinny-file/windfall-skinny-file.csv"
-}
 
-def list_free_datasets():
-    """
-    :return: The names of every free placekey'd dataset Placekey offers
-    """
-    return DATASET_LOCATIONS.keys()
-
-def return_free_datasets_location_by_name(name: str):
-    """
-    Get the S3 location of a free dataset by its name. Find names using list_free_datasets. Raises ValueError if name is not correct.
-
-    :param name: Dataset Name (str)
-    :return: The public S3 location of the placekey'd dataset
-    """
-    if DATASET_LOCATIONS[name]:
-        return DATASET_LOCATIONS[name]
-    else:
-        raise ValueError("No dataset by name of ", name)
-    
 def _get_header_int():
     """
     :return: An integer corresponding to the header of an H3 integer
