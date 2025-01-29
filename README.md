@@ -78,7 +78,19 @@ True
 >>> pk.placekey_format_is_valid('@123-456-789')
 False
 ```
+You can now access the locations of placekey’s free datasets in S3 using placekey-py! Use these two functions:
 
+  ```python
+print(pk.list_free_datasets())
+
+print(pk.return_free_datasets_location_by_name('chipotle-locations'))
+```
+
+1.  List Free Datasets: Returns a list of all names of Placekey’s available free datasets
+    
+2.  Return Free Datasets Location By Name: Using one of the names from List Free Datasets above, returns the publicly accessible S3 URI of said dataset.
+
+You can use these locations to download files programmatically (with boto3) or directly in Spark.
 ## API Client
 
 This package also includes a client for the Placekey API. The methods in the client are automatically rate limited.
