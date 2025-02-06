@@ -35,6 +35,30 @@ jobs:
 
       - name: Check distribution
         run: twine check dist/*
+        
+      - name: Set up .pypirc
+        run: |
+          cat <<EOF > ~/.pypirc
+          [distutils]
+            index-servers =
+              pypi
+              placekey
+              testpypi
+
+          [pypi]
+            username = __token__
+            password = ${{ secrets.PYPI_API_TOKEN }}
+
+          [placekey]
+            repository = https://upload.pypi.org/legacy/
+            username = __token__
+            password = ${{ secrets.PYPI_API_TOKEN }}
+
+          [testpypi]
+            repository = https://test.pypi.org/legacy/
+            username = __token__
+            password = ${{ secrets.TEST_PYPI_API_TOKEN }}
+          EOF
 
       - name: Upload to TestPyPI
         env:
@@ -46,4 +70,4 @@ jobs:
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN}}
         run: |
-          twine upload dist/*
+          twine upload pypi dist/*
