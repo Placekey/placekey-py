@@ -5,8 +5,7 @@ from json import JSONDecodeError
 
 import backoff
 import requests
-from backoff import on_exception, fibo
-from ratelimit import limits, RateLimitException
+from .vendor.ratelimit import limits, RateLimitException
 
 from .__version__ import __version__
 

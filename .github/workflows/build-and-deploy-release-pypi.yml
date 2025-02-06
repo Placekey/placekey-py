@@ -24,10 +24,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel build twine
 
-      - name: Build wheels for selected dependencies
-        run: |
-          pip wheel -r requirements-build.txt -w dist
-
       - name: Build distribution
         run: |
           python -m build --sdist
@@ -35,30 +31,6 @@ jobs:
 
       - name: Check distribution
         run: twine check dist/*
-        
-      - name: Set up .pypirc
-        run: |
-          cat <<EOF > ~/.pypirc
-          [distutils]
-            index-servers =
-              pypi
-              placekey
-              testpypi
-
-          [pypi]
-            username = __token__
-            password = ${{ secrets.PYPI_API_TOKEN }}
-
-          [placekey]
-            repository = https://upload.pypi.org/legacy/
-            username = __token__
-            password = ${{ secrets.PYPI_API_TOKEN }}
-
-          [testpypi]
-            repository = https://test.pypi.org/legacy/
-            username = __token__
-            password = ${{ secrets.TEST_PYPI_API_TOKEN }}
-          EOF
 
       - name: Upload to TestPyPI
         env:

@@ -1,0 +1,13 @@
+ratelimit-2.2.1.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+ratelimit-2.2.1.dist-info/LICENSE.txt,sha256=14uHNBlWdDYLwdOJ_L5WTXt9TtcKJ5tsTeUGF_JaYkA,1079
+ratelimit-2.2.1.dist-info/METADATA,sha256=ppklaCuI5u5jW6RWm5DDiDrXj2Qp3VMIji3Fcjno2xY,4347
+ratelimit-2.2.1.dist-info/RECORD,,
+ratelimit-2.2.1.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+ratelimit-2.2.1.dist-info/WHEEL,sha256=PZUExdf71Ui_so67QXpySuHtCi3-J3wvF4ORK6k_S8U,91
+ratelimit-2.2.1.dist-info/top_level.txt,sha256=6_2MrjvsAurbjvmuoRAAjLQZJkx359fKsRuhIVSiEbI,10
+ratelimit/__init__.py,sha256=Q0mWaPTJzUPnrks7HmNc3kBK4E0q8DiWu1X9iWnfQNA,678
+ratelimit/__pycache__/__init__.cpython-312.pyc,,
+ratelimit/__pycache__/decorators.cpython-312.pyc,,
+ratelimit/__pycache__/exception.cpython-312.pyc,,
+ratelimit/decorators.py,sha256=bhIxOEF48da8VQWP8y4PsBXiAAX5g2w67sQ0FYdpwss,4391
+ratelimit/exception.py,sha256=0O8hwvLqDH4CnAIW4Ulu-ieO6FYcbUbMFlxkWp2oaI8,641

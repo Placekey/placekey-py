@@ -8,8 +8,8 @@ import re
 import json
 from math import asin, cos, radians, sqrt
 
-import h3
-import h3.api.basic_int as h3_int
+from .vendor import h3
+from .vendor.h3.api import basic_int as h3_int
 from shapely.geometry import mapping, shape, Polygon, polygon
 from shapely.ops import transform
 from shapely.strtree import STRtree
