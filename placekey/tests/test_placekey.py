@@ -5,7 +5,7 @@ in the parent directory of this repository.
 """
 
 import unittest
-from placekey.vendor.h3.api import basic_int as h3_int
+import h3.api.basic_int as h3_int
 from shapely.wkt import loads as wkt_loads
 from shapely.geometry import shape
 from shapely.ops import transform

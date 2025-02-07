@@ -27,8 +27,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Placekey/placekey-py",
-    packages=setuptools.find_packages(include=["placekey", "placekey.vendor", "placekey.vendor.*"]),
-    include_package_data=True,
+    packages=setuptools.find_packages(),
     install_requires=['shapely', 'requests', 'backoff', 'boto3'],
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -5,7 +5,7 @@ from json import JSONDecodeError
 
 import backoff
 import requests
-from .vendor.ratelimit import limits, RateLimitException
+from ratelimit import limits, RateLimitException
 
 from .__version__ import __version__
 
