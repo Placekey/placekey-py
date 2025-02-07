@@ -42,4 +42,4 @@ jobs:
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN}}
         run: |
-          twine upload pypi dist/* --verbose
+          twine upload dist/* --verbose
