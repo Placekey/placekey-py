@@ -1,4 +1,4 @@
 --index-url https://pypi.python.org/simple/
 -e .
-h3>=3.6.1,<4
-ratelimit
+h3 @ https://github.com/Placekey/placekey-py/releases/download/v0.0.30/h3-3.7.7-cp39-cp39-macosx_11_0_arm64.whl
+ratelimit @ https://github.com/Placekey/placekey-py/releases/download/v0.0.30/ratelimit-2.2.1-py3-none-any.whl
