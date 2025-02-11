@@ -10,6 +10,7 @@ from math import asin, cos, radians, sqrt
 
 import h3
 import h3.api.basic_int as h3_int
+import shapely
 from shapely.geometry import mapping, shape, Polygon, polygon
 from shapely.ops import transform
 from shapely.strtree import STRtree
@@ -41,7 +42,7 @@ REPLACEMENT_MAP = (
     ("dyk", "dye"),
     ("bch", "bce")
 )
-HEADER_BITS = bin(h3_int.geo_to_h3(0.0, 0.0, resolution=RESOLUTION))[2:].zfill(64)[:12]
+HEADER_BITS = bin(h3_int.latlng_to_cell(0.0, 0.0, RESOLUTION))[2:].zfill(64)[:12]
 BASE_CELL_SHIFT = 2 ** (3 * 15)    # Adding this will increment the base cell value by 1
 UNUSED_RESOLUTION_FILLER = 2 ** (3 * (15 - BASE_RESOLUTION)) - 1
 FIRST_TUPLE_REGEX = '[' + ALPHABET + REPLACEMENT_CHARS + PADDING_CHAR + ']{3}'
@@ -110,7 +111,7 @@ def geo_to_placekey(lat, long):
     :return: Placekey (string)
 
     """
-    return _encode_h3_int(h3_int.geo_to_h3(lat, long, resolution=RESOLUTION))
+    return _encode_h3_int(h3_int.latlng_to_cell(lat, long, RESOLUTION))
 
 
 def placekey_to_geo(placekey):
@@ -121,7 +122,7 @@ def placekey_to_geo(placekey):
     :return: (latitude, longitude) as a tuple of floats
 
     """
-    return h3.h3_to_geo(placekey_to_h3(placekey))
+    return h3.cell_to_latlng(placekey_to_h3(placekey))
 
 
 def placekey_to_h3(placekey):
@@ -133,7 +134,7 @@ def placekey_to_h3(placekey):
 
     """
     _, where = _parse_placekey(placekey)
-    return h3.h3_to_string(_decode_to_h3_int(where))
+    return h3.int_to_str(_decode_to_h3_int(where))
 
 
 def h3_to_placekey(h3_string):
@@ -144,7 +145,7 @@ def h3_to_placekey(h3_string):
     :return: Placekey (string)
 
     """
-    return _encode_h3_int(h3.string_to_h3(h3_string))
+    return _encode_h3_int(h3.str_to_int(h3_string))
 
 
 def get_prefix_distance_dict():
@@ -205,7 +206,7 @@ def get_neighboring_placekeys(placekey, dist=1):
 
     """
     h3_integer = placekey_to_h3_int(placekey)
-    neighboring_h3 = h3_int.k_ring(h3_integer, dist)
+    neighboring_h3 = h3_int.grid_disk(h3_integer, dist)
     return {h3_int_to_placekey(h) for h in neighboring_h3}
 
 
@@ -223,7 +224,10 @@ def placekey_to_hex_boundary(placekey, geo_json=False):
 
     """
     h3_integer = placekey_to_h3_int(placekey)
-    return h3_int.h3_to_geo_boundary(h3_integer, geo_json=geo_json)
+    boundary = h3_int.cell_to_boundary(h3_integer)
+    if geo_json:
+        return tuple([(y, x) for x, y in boundary])
+    return boundary
 
 
 def placekey_to_polygon(placekey, geo_json=False):
@@ -239,9 +243,11 @@ def placekey_to_polygon(placekey, geo_json=False):
     :return: A shapely Polygon object
 
     """
-    return polygon.orient(
-        Polygon(placekey_to_hex_boundary(placekey, geo_json=geo_json)),
-        sign=1)
+    p_to_hex = placekey_to_hex_boundary(placekey, geo_json=False)
+    if geo_json:
+        flipped_coords = [(y,x) for x, y in p_to_hex]
+        return polygon.orient(Polygon(flipped_coords),sign=1)
+    return polygon.orient(Polygon(p_to_hex),sign=1)
 
 
 def placekey_to_wkt(placekey, geo_json=False):
@@ -268,7 +274,8 @@ def placekey_to_geojson(placekey):
     :param placekey: Placekey (string)
     :return: Dictionary describing the polygon in GeoJSON format
     """
-    return mapping(placekey_to_polygon(placekey, geo_json=True))
+    poly = placekey_to_polygon(placekey, geo_json=True)
+    return placekey_to_polygon(placekey, geo_json=True)
 
 
 
@@ -295,13 +302,14 @@ def polygon_to_placekeys(poly, include_touching=False, geo_json=False):
 
     buffer_size = 2e-3
     buffered_poly = poly.buffer(buffer_size)
-    candidate_hexes = h3_int.polyfill(mapping(buffered_poly), 10)
+    latlngpoly = h3.LatLngPoly(buffered_poly.exterior.coords)
+    candidate_hexes = h3.polygon_to_cells(latlngpoly, 10)
 
     tree = STRtree([poly])
     interior_hexes = []
     boundary_hexes = []
     for h in list(candidate_hexes):
-        hex_poly = Polygon(h3_int.h3_to_geo_boundary(h))
+        hex_poly = Polygon(h3_int.cell_to_boundary(h3.str_to_int(h)))
         if len(tree.query(hex_poly)) > 0:
             if poly.contains(hex_poly):
                 interior_hexes.append(h)
@@ -393,8 +401,8 @@ def placekey_distance(placekey_1, placekey_2):
     :return: distance in meters (float)
 
     """
-    geo_1 = h3_int.h3_to_geo(placekey_to_h3_int(placekey_1))
-    geo_2 = h3_int.h3_to_geo(placekey_to_h3_int(placekey_2))
+    geo_1 = h3_int.cell_to_latlng(placekey_to_h3_int(placekey_1))
+    geo_2 = h3_int.cell_to_latlng(placekey_to_h3_int(placekey_2))
     return _geo_distance(geo_1, geo_2)
 
 
@@ -423,7 +431,7 @@ def _where_part_is_valid(where):
 
     """
     return (bool(WHERE_REGEX.match(where)) and
-            h3_int.h3_is_valid(placekey_to_h3_int(where)))
+            h3.is_valid_cell(placekey_to_h3(where)))
 
 
 def _geo_distance(geo_1, geo_2):
@@ -483,12 +491,14 @@ def _strip_encoding(s):
     return s
 
 
-def _shorten_h3_integer(h3_integer):
+def _shorten_h3_integer(h3_integer: int):
     """
     Shorten an H3 integer to only include location data up to the base resolution
     :param h3_integer: H3 integer (int)
     :return: shortened H3 integer
     """
+    if type(h3_integer) is str:
+        h3_integer = h3.str_to_int(h3_integer)
     # Cuts off the 12 left-most bits that don't code location
     out = (h3_integer + BASE_CELL_SHIFT) % (2 ** 52)
     # Cuts off the rightmost bits corresponding to resolutions greater than the base resolution

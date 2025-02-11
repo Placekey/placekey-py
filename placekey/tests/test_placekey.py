@@ -130,7 +130,7 @@ class TestPlacekey(unittest.TestCase):
             '@5vg-7gq-tjv',
             '@5vg-7gq-tvz',
             '@5vg-7gq-ty9',
-            '@5vg-7gq-v2k'}
+            '@5vg-7gq-v2k'} 
 
         self.assertSetEqual(pk.get_neighboring_placekeys(key, 0), {key},
                             "placekey is its only neighbor of distance 0")
@@ -143,13 +143,15 @@ class TestPlacekey(unittest.TestCase):
         """
         key = '@5vg-7gq-tvz'
         h3_integer = pk.placekey_to_h3_int(key)
+        boundary = h3_int.cell_to_boundary(h3_integer)
+        boundary_flipped = tuple([(y, x) for x, y in boundary])
         self.assertTupleEqual(
             pk.placekey_to_hex_boundary(key, geo_json=True),
-            h3_int.h3_to_geo_boundary(h3_integer, geo_json=True),
+            boundary_flipped,
             "placekey boundary equal to H3 boundary (geo_json=True)")
         self.assertTupleEqual(
             pk.placekey_to_hex_boundary(key, geo_json=False),
-            h3_int.h3_to_geo_boundary(h3_integer, geo_json=False),
+            boundary,
             "placekey boundary equal to H3 boundary (geo_json=False)")
 
     def test_placekey_to_wkt(self):
@@ -175,7 +177,7 @@ class TestPlacekey(unittest.TestCase):
             # that the resulting polygons
             pk_poly = wkt_loads(pk_wkt)
             wkt_poly = wkt_loads(wkt)
-            self.assertTrue(pk_poly.almost_equals(wkt_poly, decimal=12))
+            self.assertTrue(pk_poly.equals_exact(wkt_poly, tolerance=12))
 
     def test_placekey_to_geojson(self):
         """
@@ -204,7 +206,7 @@ class TestPlacekey(unittest.TestCase):
             # that the resulting polygons
             pk_poly = shape(pk_geojson)
             geojson_poly = shape(geo_json)
-            self.assertTrue(pk_poly.almost_equals(geojson_poly, decimal=12))
+            self.assertTrue(pk_poly.equals_exact(geojson_poly, tolerance=12))
 
     def test_placekey_format_is_valid(self):
         """
@@ -354,3 +356,9 @@ class TestPlacekey(unittest.TestCase):
                               "poly and conformant geojson conversions' interiors don't match")
         self.assertCountEqual(poly_keys['boundary'], non_conformant_geojson_keys['boundary'],
                               "poly and non-conformant geojson conversions' interiors don't match")
+        
+    def test_reading_public_dataset_locations(self):
+        dataset_list = pk.list_free_datasets()
+        self.assertGreater(len(dataset_list), 0)
+        for name in dataset_list:
+            self.assertNotEqual("", pk.return_free_datasets_location_by_name(name))
