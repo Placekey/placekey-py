@@ -6,6 +6,7 @@ from json import JSONDecodeError
 import backoff
 import requests
 from ratelimit import limits, RateLimitException
+from .general import _post_request_function
 
 from .__version__ import __version__
 
@@ -106,13 +107,15 @@ class PlacekeyAPI:
                     self.headers['User-Agent'] + " " + self.user_agent_comment).strip()
 
         # Rate-limited function for a single requests
-        self.make_request = self._get_request_function(
+        self.make_request = _post_request_function(
+            headers=self.headers,
             url=self.URL,
             calls=self.REQUEST_LIMIT,
             period=self.REQUEST_WINDOW,
             max_tries=self.max_retries)
 
-        self.make_bulk_request = self._get_request_function(
+        self.make_bulk_request = _post_request_function(
+            headers=self.headers,
             url=self.BULK_URL,
             calls=self.BULK_REQUEST_LIMIT,
             period=self.BULK_REQUEST_WINDOW,
@@ -291,36 +294,3 @@ class PlacekeyAPI:
         except Exception as e:
             self.logger.error(f"Error parsing: {e}, returning empty list")
             return []
-
-    def _get_request_function(self, url, calls, period, max_tries):
-        """
-        Construct a rate limited function for making requests.
-
-        :param url: request URL
-        :param calls: number of calls that can be made in time period
-        :param  period: length of rate limiting time period in seconds
-        :param max_tries: the maximum number of retries before giving up
-        """
-
-        @backoff.on_exception(backoff.fibo, (RateLimitException, requests.exceptions.RequestException),
-                              max_tries=max_tries)
-        @limits(calls=calls, period=period)
-        def make_request(data):
-            try:
-                response = requests.post(
-                    url, headers=self.headers,
-                    data=json.dumps(data).encode('utf-8')
-                )
-
-                if response.status_code == 429:
-                    raise RateLimitException("Rate limit exceeded", 0)
-                elif response.status_code == 503:
-                    raise requests.exceptions.RequestException("Service Unavailable")
-                elif response.status_code == 504:
-                    raise requests.exceptions.RequestException("Gateway Timeout")
-
-                return response
-            except requests.exceptions.RequestException as e:
-                raise e
-
-        return make_request
