@@ -7,6 +7,7 @@ H3 indices. This module also includes additional utilities related to Placekeys.
 import re
 import json
 from math import asin, cos, radians, sqrt
+import ast
 
 import h3
 import h3.api.basic_int as h3_int
@@ -18,6 +19,7 @@ from shapely.wkt import loads as wkt_loads
 import boto3
 from botocore import UNSIGNED
 from botocore.config import Config
+from .general import _get_request_function
 
 RESOLUTION = 10
 BASE_RESOLUTION = 12
@@ -57,12 +59,18 @@ def list_free_datasets():
     """
     :return: The names of every free placekey'd dataset Placekey offers
     """
-    folders = set()
-    paginator = s3.get_paginator("list_objects_v2")
-    for page in paginator.paginate(Bucket='placekey-free-datasets', Prefix='', Delimiter="/"):
-        for common_prefix in page.get("CommonPrefixes", []):
-            folders.add(common_prefix["Prefix"].replace("/", ""))
-    return folders
+    func = _get_request_function(
+        headers={},
+        url="https://api.placekey.io/placekey-py/v1/get-public-dataset-names",
+        calls=3,
+        period=60,
+        max_tries=20
+    )
+    response = func()
+    if response.status_code == 200:
+        return ast.literal_eval(response.text)
+    else:
+        raise Exception("Something went wrong. Please contact Placekey.")
 
 def return_free_datasets_location_by_name(name: str, url: bool = False):
     """
@@ -72,21 +80,23 @@ def return_free_datasets_location_by_name(name: str, url: bool = False):
     :param name: Return a URL or S3 URI? Default is False (S3 URI)
     :return: The public S3 location of the placekey'd dataset
     """
-    response = s3.list_objects_v2(Bucket='placekey-free-datasets', Prefix=name+'/csv')
-
-    # Extract files from the response
-    files = [obj["Key"] for obj in response.get("Contents", [])]
-
-    if len(files) == 1:
-        if url:
-            return "https://placekey-free-datasets.s3.us-west-2.amazonaws.com/"+files[0]
-        else:
-            return "s3://placekey-free-datasets/"+files[0]
-    elif len(files) == 0:
-        print()
-        raise FileNotFoundError("No files found in the specified S3 directory. Please notify Placekey.")
+    func = _get_request_function(
+        headers={},
+        url="https://api.placekey.io/placekey-py/v1/get-public-dataset-location-from-name",
+        calls=3,
+        period=60,
+        max_tries=20
+    )
+    response = func(params={
+        'name': name,
+        'url': url
+    })
+    if response.status_code == 200:
+        return response.text
+    elif response.status_code >= 400 and response.status_code < 500:
+        raise ValueError(response.reason)
     else:
-        raise ValueError(f"Something went wrong. Please notify Placekey.")
+        raise Exception("Something went wrong. Please contact Placekey.")
 
 def _get_header_int():
     """
