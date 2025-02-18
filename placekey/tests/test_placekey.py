@@ -362,3 +362,4 @@ class TestPlacekey(unittest.TestCase):
         self.assertGreater(len(dataset_list), 0)
         for name in dataset_list:
             self.assertNotEqual("", pk.return_free_datasets_location_by_name(name))
+        self.assertNotEqual("", pk.return_free_dataset_joins_by_name([dataset_list[1], dataset_list[2]])['outer'])
