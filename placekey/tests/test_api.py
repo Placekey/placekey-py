@@ -6,6 +6,7 @@ To exclude slow tests run `pytest -m"not slow" placekey/tests/test_api.py`.
 import os
 import random
 import unittest
+import pandas as pd
 
 import pytest
 
@@ -120,6 +121,35 @@ class TestAPI(unittest.TestCase):
         results = self.pk_api.lookup_placekeys(lat_long_samples)
         self.assertEqual(len(results), num_samples)
         self.assertTrue(all(['placekey' in r for r in results]))
+
+    def test_pandas_placekey_and_join(self):
+        df = pd.DataFrame({
+            "address": ["1543 Mission Street, Floor 3", "598 Portola Dr", None],
+            "city": ["San Francisco", "San Francisco", None],
+            "region": ["CA", "CA", None],
+            "postal": ["94105", "94131", None],
+            "country": ["US", "US", None],
+            "latitude": [None, None, 37.7371],
+            "longitude": [None, None, -122.44283]
+        })
+
+        column_mappings = {
+            "street_address": "address",
+            "city": "city",
+            "region": "region",
+            "postal_code": "postal",
+            "iso_country_code": "country",
+            "latitude": "latitude",
+            "longitude": "longitude"
+        }
+
+        df_with_placekeys = self.pk_api._placekey_pandas_df(df, column_mappings, fields=['address_placekey', 'address_placekey', 'address_confidence_score'])
+        self.assertTrue('address_placekey' in df_with_placekeys)
+        self.assertTrue('address_confidence_score' in df_with_placekeys)
+        self.assertTrue('placekey' in df_with_placekeys)
+        double_join = self.pk_api._join_pandas_df(df_with_placekeys, {}, df.copy(deep=True), column_mappings, on='address_placekey')
+        self.assertTrue('city_x' in double_join)
+        self.assertTrue('city_y' in double_join)
 
 
 

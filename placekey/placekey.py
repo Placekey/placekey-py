@@ -6,6 +6,7 @@ H3 indices. This module also includes additional utilities related to Placekeys.
 
 import re
 import json
+from typing import List
 from math import asin, cos, radians, sqrt
 import ast
 
@@ -93,6 +94,32 @@ def return_free_datasets_location_by_name(name: str, url: bool = False):
     })
     if response.status_code == 200:
         return response.text
+    elif response.status_code >= 400 and response.status_code < 500:
+        raise ValueError(response.reason)
+    else:
+        raise Exception("Something went wrong. Please contact Placekey.")
+    
+def return_free_dataset_joins_by_name(names: List[str], url: bool = False):
+    """
+    Get the S3 location of a free dataset join by their names. Find names using list_free_datasets. Raises ValueError if names are not correct.
+
+    :param name: Dataset Names (list of str)
+    :param name: Return a URL or S3 URI? Default is False (S3 URI)
+    :return: The public S3 locations of the joins in JSON form for each type: outer, inner, left, and right join
+    """
+    func = _get_request_function(
+        headers={},
+        url="https://api.placekey.io/placekey-py/v1/get-public-join-from-names",
+        calls=3,
+        period=60,
+        max_tries=20
+    )
+    response = func(params={
+        'public_datasets': ",".join(names),
+        'url': url
+    })
+    if response.status_code == 200:
+        return json.loads(response.text)
     elif response.status_code >= 400 and response.status_code < 500:
         raise ValueError(response.reason)
     else:
