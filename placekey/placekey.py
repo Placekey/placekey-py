@@ -6,6 +6,7 @@ H3 indices. This module also includes additional utilities related to Placekeys.
 
 import re
 import json
+from typing import List
 from math import asin, cos, radians, sqrt
 import ast
 
@@ -98,7 +99,7 @@ def return_free_datasets_location_by_name(name: str, url: bool = False):
     else:
         raise Exception("Something went wrong. Please contact Placekey.")
     
-def return_free_dataset_joins_by_name(names: list[str], url: bool = False):
+def return_free_dataset_joins_by_name(names: List[str], url: bool = False):
     """
     Get the S3 location of a free dataset join by their names. Find names using list_free_datasets. Raises ValueError if names are not correct.
 

@@ -4,7 +4,9 @@ import logging
 from json import JSONDecodeError
 
 import backoff
+import pandas as pd
 import requests
+from typing import Set, Dict
 from ratelimit import limits, RateLimitException
 from .general import _post_request_function
 
@@ -88,6 +90,26 @@ class PlacekeyAPI:
 
     DEFAULT_QUERY_ID_PREFIX = "place_"
 
+    MIN_INPUTS = [
+        ['latitude', 'longitude'],
+        ['street_address', 'city', 'region', 'postal_code'],
+        ['street_address', 'region', 'postal_code'],
+        ['street_address', 'region', 'city'],
+    ]
+
+    PLACEKEY_OUTPUTS = {
+        "placekey",
+        "address_placekey",
+        "building_placekey",
+        "gers",
+        "confidence_score",
+        "upi",
+        "geoid",
+        "parcel",
+        "gers",
+        "address_confidence_score"
+    }
+
     def __init__(self, api_key=None, max_retries=DEFAULT_MAX_RETRIES, logger=log,
                  user_agent_comment=None):
         self.api_key = api_key
@@ -120,6 +142,79 @@ class PlacekeyAPI:
             calls=self.BULK_REQUEST_LIMIT,
             period=self.BULK_REQUEST_WINDOW,
             max_tries=self.max_retries)
+    
+    def _has_minimum_inputs(self, user_inputs: Set[str]) -> bool:
+        for inputs in self.MIN_INPUTS:
+            hasRequiredInputs = True
+            for key in inputs:
+                if key not in user_inputs:
+                    hasRequiredInputs = False
+                    break
+            if hasRequiredInputs:
+                return True
+        return False
+    
+    def _join_pandas_df(self, df1: pd.DataFrame, column_mapping_1: Dict, df2: pd.DataFrame, column_mapping_2: Dict, how: str = 'inner', on: str = "placekey", fields=None, batch_size=MAX_BATCH_SIZE, verbose=False):
+        fields = [on] if fields is None else fields + [on]
+        if on not in df1:
+            if on in self.PLACEKEY_OUTPUTS:
+                df1 = self._placekey_pandas_df(df1, column_mapping=column_mapping_1, fields=fields, batch_size=batch_size, verbose=verbose, return_original_values=True)
+            else:
+                raise ValueError("The first dataset does not contain the join key {}".format(on))
+        if on not in df2:
+            if on in self.PLACEKEY_OUTPUTS:
+                df2 = self._placekey_pandas_df(df2, column_mapping=column_mapping_2, fields=fields, batch_size=batch_size, verbose=verbose, return_original_values=True)
+            else:
+                raise ValueError("The second dataset does not contain the join key {}".format(on))
+        
+        return pd.merge(df1, df2, how=how, on=on)
+            
+
+    def _placekey_pandas_df(self, df: pd.DataFrame, column_mapping: Dict, fields=None, batch_size=MAX_BATCH_SIZE, verbose=False, return_original_values=True):
+        """
+        Takes a DataFrame and a list of column names that map to placekey input fields and returns a placekey'd pandas dataframe.
+
+        Args:
+        :param df (pd.DataFrame): The input DataFrame.
+        :param column_mapping (dict): List of column names to map as inputs to the method.
+        :param fields: A list of requested parameters other than placekey. For example: address_placekey, building_placekey
+            Defaults to None
+        :param batch_size: Integer for the number of places to lookup in a single batch.
+            Defaults to 100, and cannot exceeded 100.
+        :param verbose: Boolean for whether or not to log additional information.
+            Defaults to False
+
+        Returns:
+        - pd.DataFrame: The updated DataFrame with new rows for placekey outputs
+        """
+        if not self._validate_query(column_mapping):
+            raise ValueError(
+                "Some queries contain keys other than: {}".format(self.QUERY_PARAMETERS))
+        
+        if not self._has_minimum_inputs(column_mapping.keys()):
+            raise ValueError(
+                "The inputted DataFrame doesn't have enough information. Refer to minimum inputs documentation here: https://docs.placekey.io/documentation/placekey-api/input-parameters/minimum-inputs")
+        
+        temp_query_id = 'temp_query_id'
+        df[temp_query_id] = ''
+        places = []
+        for i, row in df.iterrows():
+            place = {}
+            for place_key, column_name in column_mapping.items():
+                if column_name in df.columns and pd.notna(row[column_name]):
+                    place[place_key] = row[column_name]
+            query_id = self.DEFAULT_QUERY_ID_PREFIX + str(i)
+            place['query_id'] = query_id
+            df.at[i, temp_query_id] = query_id
+            places.append(place)
+        result = self.lookup_placekeys(places=places, fields=fields, batch_size=batch_size, verbose=verbose)
+        result_df = pd.DataFrame(result).rename(columns={"query_id": temp_query_id})
+
+        if not return_original_values:
+            return result_df
+        merged_df = pd.merge(df, result_df, how='inner', on=temp_query_id).drop([temp_query_id], axis=1)
+        return merged_df
+        
 
     def lookup_placekey(self,
                         fields=None,
