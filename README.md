@@ -334,7 +334,7 @@ The `PlacekeyAPI.lookup_placekeys` method can be used to lookup Placekeys for mu
 
 ```
 
-You can submit a Pandas dataset and have it come back placekey'd:
+You can submit a Pandas dataset and have it come back wth Placekeys:
 ```python
 df  =  pd.DataFrame({
 "address": ["1543 Mission Street, Floor 3", "598 Portola Dr", None],
